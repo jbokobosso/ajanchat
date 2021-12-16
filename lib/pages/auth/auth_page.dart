@@ -1,6 +1,8 @@
+import 'package:ajanchat/constants/file_assets.dart';
 import 'package:ajanchat/constants/routes.dart';
 import 'package:ajanchat/widgets/gradient_tile.dart';
 import 'package:flutter/material.dart';
+import 'package:rive/rive.dart';
 
 class AuthPage extends StatefulWidget {
   const AuthPage({Key? key}) : super(key: key);
@@ -22,9 +24,9 @@ class _AuthPageState extends State<AuthPage> {
         body: Container(
           height: double.infinity,
           width: double.infinity,
-          decoration: const BoxDecoration(
+          decoration: BoxDecoration(
               image: DecorationImage(
-                  image: AssetImage('assets/images/bg.png'),
+                  image: AssetImage(FileAssets.bgImage),
                   fit: BoxFit.cover
               )
           ),
@@ -32,18 +34,13 @@ class _AuthPageState extends State<AuthPage> {
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              // Container(
-              //     child: Provider.of<AuthProvider>(context).riveArtboard == null
-              //         ? Text('')
-              //         : Container(
-              //             height: 100.0,
-              //             child: Rive(
-              //                 artboard: Provider.of<AuthProvider>(context).riveArtboard,
-              //                 fit: BoxFit.contain
-              //             )
-              //           ),
-              //     width: MediaQuery.of(context).size.width*0.7
-              // ),
+              Container(
+                  child: Container(
+                          height: 100.0,
+                          child: RiveAnimation.asset(FileAssets.riveLogoAnimation)
+                        ),
+                  width: MediaQuery.of(context).size.width*0.7
+              ),
               const SizedBox(height: 50),
               Column(
                 children: [
