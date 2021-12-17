@@ -27,12 +27,20 @@ environment:
 # the latest version available on pub.dev. To see which dependencies have newer
 # versions available, run `flutter pub outdated`.
 dependencies:
+  # UI facilities
+  bubble: ^1.2.1
+
+  # Layout Management
+  align_positioned: ^2.0.1
 
   # Arch
   provider: ^6.0.1
 
   # Media
   rive: ^0.7.33
+  lottie: ^1.0.1
+  image_picker: ^0.7.4
+  flutter_svg: ^0.21.0+1
 
   flutter:
     sdk: flutter
