@@ -3,6 +3,7 @@ import 'package:ajanchat/providers/auth_provider.dart';
 import 'package:ajanchat/providers/home_provider.dart';
 import 'package:ajanchat/utils/utils.dart';
 import 'package:ajanchat/widgets/ajan_tile.dart';
+import 'package:animated_bottom_navigation_bar/animated_bottom_navigation_bar.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
@@ -16,6 +17,14 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+
+  final iconList = <IconData>[
+    Icons.home,
+    Icons.message,
+    Icons.person,
+    Icons.settings,
+  ];
+
   @override
   Widget build(BuildContext context) {
 
@@ -38,15 +47,8 @@ class _HomePageState extends State<HomePage> {
         decoration: BoxDecoration(image: DecorationImage(image: AssetImage(FileAssets.bg2), fit: BoxFit.cover)),
         child: Center(
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            mainAxisAlignment: MainAxisAlignment.end,
             children: [
-              Align(
-                alignment: Alignment.topRight,
-                child: IconButton(
-                  icon: const Icon(Icons.settings),
-                  onPressed: () => null,
-                ),
-              ),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 45),
                 child: ListTile(
@@ -91,18 +93,6 @@ class _HomePageState extends State<HomePage> {
                     onPressed: () => null,
                     icon: Image.asset(FileAssets.crossIcon, color: const Color(0xffFFCB58), width: 17),
                   ),
-                  GestureDetector(
-                    child: Container(
-                      decoration: const BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: Color(0xff51C3FE)
-                      ),
-                      child: Padding(
-                        padding: const EdgeInsets.all(20.0),
-                        child: Image.asset(FileAssets.thunderIcon, color: Colors.white, width: 15),
-                      ),
-                    ),
-                  ),
                   IconButton(
                     icon: const Icon(Icons.favorite, color: Color(0xffFC77A0)),
                     onPressed: () => null,
@@ -113,33 +103,27 @@ class _HomePageState extends State<HomePage> {
           ),
         )
       ),
-      bottomNavigationBar: Consumer<AuthProvider>(
-        builder: (context, authProvider, child) => BottomNavigationBar(
-          onTap: (index) => authProvider.changeTabIndex(index),
-          currentIndex: authProvider.currentTabIndex,
-          type: BottomNavigationBarType.shifting,
-          items: const [
-            BottomNavigationBarItem(
-              icon: Icon(Icons.home),
-              activeIcon: Icon(Icons.home),
-              label: '___',
-              backgroundColor: Color(0xff19516F)
-            ),
-            BottomNavigationBarItem(
-                icon: Icon(Icons.chat),
-                activeIcon: Icon(Icons.chat),
-                label: '___',
-                backgroundColor: Color(0xff19516F)
-            ),
-            BottomNavigationBarItem(
-                icon: Icon(Icons.person),
-                activeIcon: Icon(Icons.person),
-                label: '___',
-                backgroundColor: Color(0xff19516F)
-            ),
-          ],
-        ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () => null,
+        backgroundColor: const Color(0xff51C3FE),
+        child: Image.asset(FileAssets.thunderIcon, color: Colors.white, width: 15),
       ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+      bottomNavigationBar: Consumer<AuthProvider>(
+        builder: (context, authProvider, child) => AnimatedBottomNavigationBar(
+          inactiveColor: Colors.white,
+          activeColor: Colors.pinkAccent,
+          backgroundColor: const Color(0xff19516F),
+          icons: iconList,
+          activeIndex: authProvider.currentTabIndex,
+          gapLocation: GapLocation.center,
+          notchSmoothness: NotchSmoothness.verySmoothEdge,
+          leftCornerRadius: 32,
+          rightCornerRadius: 32,
+          onTap: (index) => setState(() => authProvider.changeTabIndex(index)),
+          //other params
+        ),
+      )
     );
   }
 }

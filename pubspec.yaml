@@ -29,6 +29,7 @@ environment:
 dependencies:
 
   # UI facilities
+  animated_bottom_navigation_bar: ^0.3.2
   fluttertoast: ^8.0.8
   flutter_swipable: ^1.2.1
   bubble: ^1.2.1

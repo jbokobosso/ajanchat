@@ -24,7 +24,7 @@ class _AjanTileState extends State<AjanTile> {
   Widget build(BuildContext context) {
     return SizedBox(
       width: MediaQuery.of(context).size.width*0.7,
-      height: MediaQuery.of(context).size.height*0.5,
+      height: MediaQuery.of(context).size.height*0.6,
       child: Swipable(
         child: Stack(
           alignment: Alignment.bottomCenter,
