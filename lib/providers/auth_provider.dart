@@ -1,14 +1,20 @@
+import 'dart:io';
+
+import 'package:ajanchat/constants/ajan_preferences.dart';
+import 'package:ajanchat/models/PreferenceModel.dart';
 import 'package:ajanchat/models/RelationPreferences.dart';
 import 'package:flutter/foundation.dart';
-import 'package:rive/rive.dart';
+import 'package:image_picker/image_picker.dart';
 
 class AuthProvider extends ChangeNotifier {
-  late Artboard riveArtboard;
-  RiveAnimationController controller = SimpleAnimation('discover');
 
-  late RelationPreferences genderPreference = RelationPreferences(iam: Gender.Homme, iWannaMeet: Gender.Femme, relationType: RelationType.Flirt);
+  RelationPreferences genderPreference = RelationPreferences(iam: Gender.Homme, iWannaMeet: Gender.Femme, relationType: RelationType.Flirt);
+  List<PreferenceModel> preferences = availablePreferences;
+  late File image = File("");
+  List<File> images = [];
+  final picker = ImagePicker();
 
-  selectGender(Gender gender) {
+  void selectGender(Gender gender) {
     switch(gender) {
       case Gender.Femme:
         genderPreference.iam = gender;
@@ -20,7 +26,7 @@ class AuthProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  selectPartnerGender(Gender gender) {
+  void selectPartnerGender(Gender gender) {
     switch(gender) {
       case Gender.Femme:
         genderPreference.iWannaMeet = gender;
@@ -32,7 +38,7 @@ class AuthProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  selectRelationType(RelationType relationType) {
+  void selectRelationType(RelationType relationType) {
     switch(relationType) {
       case RelationType.Amicale:
         genderPreference.relationType = relationType;
@@ -44,6 +50,26 @@ class AuthProvider extends ChangeNotifier {
         genderPreference.relationType = relationType;
         break;
     }
+    notifyListeners();
+  }
+
+  void selectOrUnselectPreference(int index) {
+    preferences[index].isChosen = !preferences[index].isChosen;
+    notifyListeners();
+  }
+
+  Future<void> pickImage() async {
+    final pickedFile = await picker.getImage(source: ImageSource.gallery);
+    if (pickedFile != null) {
+      image = File(pickedFile.path);
+    } else {
+      // this.coreService.showToast("Pas d'image sélectionnée");
+    }
+    notifyListeners();
+  }
+
+  void clearPictures() {
+    image = File("");
     notifyListeners();
   }
 }

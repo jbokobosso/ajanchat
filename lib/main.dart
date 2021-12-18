@@ -11,6 +11,7 @@ void main() async {
     MultiProvider(
       providers: [
         Provider(create: (context) => AuthProvider()),
+        ListenableProvider(create: (context) => AuthProvider(), child: MyApp())
       ],
       child: const MyApp(),
     ),
