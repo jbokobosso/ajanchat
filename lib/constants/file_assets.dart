@@ -8,6 +8,9 @@ class FileAssets {
   static String closeIcon = 'assets/icons/cross.svg';
   static String ajan1 = 'assets/images/ajan/ajan1.jpg';
   static String ajan2 = 'assets/images/ajan/ajan2.jpg';
+  static String ajan3 = 'assets/images/ajan/ajan3.jpg';
+  static String ajan4 = 'assets/images/ajan/ajan4.jpg';
+  static String ajan5 = 'assets/images/ajan/ajan5.jpg';
   static String crossIcon = 'assets/icons/cross.png';
   static String crownIcon = 'assets/icons/crown.png';
   static String thunderIcon = 'assets/icons/thunder.png';

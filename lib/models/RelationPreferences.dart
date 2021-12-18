@@ -1,8 +1,10 @@
 
+import 'package:ajanchat/models/ERelationType.dart';
+
 class RelationPreferences {
   Gender iam;
   Gender iWannaMeet;
-  RelationType relationType;
+  ERelationType relationType;
 
   RelationPreferences({
     required this.iam,
@@ -14,10 +16,4 @@ class RelationPreferences {
 enum Gender {
   Homme,
   Femme
-}
-
-enum RelationType {
-  Amicale,
-  Serieuse,
-  Flirt
 }

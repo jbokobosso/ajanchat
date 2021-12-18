@@ -27,7 +27,10 @@ environment:
 # the latest version available on pub.dev. To see which dependencies have newer
 # versions available, run `flutter pub outdated`.
 dependencies:
+
   # UI facilities
+  fluttertoast: ^8.0.8
+  flutter_swipable: ^1.2.1
   bubble: ^1.2.1
 
   # Layout Management

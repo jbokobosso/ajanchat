@@ -1,6 +1,7 @@
 import 'package:ajanchat/constants/globals.dart';
 import 'package:ajanchat/constants/routes.dart';
 import 'package:ajanchat/providers/auth_provider.dart';
+import 'package:ajanchat/providers/home_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -10,8 +11,8 @@ void main() async {
   runApp(
     MultiProvider(
       providers: [
-        Provider(create: (context) => AuthProvider()),
-        ListenableProvider(create: (context) => AuthProvider(), child: MyApp())
+        ChangeNotifierProvider(create: (context) => AuthProvider()),
+        ChangeNotifierProvider(create: (context) => HomeProvider()),
       ],
       child: const MyApp(),
     ),

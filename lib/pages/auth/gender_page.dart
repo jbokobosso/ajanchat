@@ -1,5 +1,6 @@
 import 'package:ajanchat/constants/file_assets.dart';
 import 'package:ajanchat/constants/routes.dart';
+import 'package:ajanchat/models/ERelationType.dart';
 import 'package:ajanchat/models/RelationPreferences.dart';
 import 'package:ajanchat/providers/auth_provider.dart';
 import 'package:ajanchat/widgets/curved_top_background.dart';
@@ -113,10 +114,10 @@ class _GenderPageState extends State<GenderPage> {
                         SizedBox(
                           height: deviceHeight*tileScale,
                           child: GestureDetector(
-                              onTap: () => authProvider.selectRelationType(RelationType.Amicale),
+                              onTap: () => authProvider.selectRelationType(ERelationType.friend),
                               child: GradientTile(
                                 fontSizeScale: tileFontScale,
-                                isBackgroundUnique: authProvider.genderPreference.relationType == RelationType.Amicale ? true : false,
+                                isBackgroundUnique: authProvider.genderPreference.relationType == ERelationType.friend ? true : false,
                                 tileAlignment: Alignment.center,
                                 tileText: 'Amicale',
                               )
@@ -126,10 +127,10 @@ class _GenderPageState extends State<GenderPage> {
                         SizedBox(
                           height: deviceHeight*tileScale,
                           child: GestureDetector(
-                              onTap: () => authProvider.selectRelationType(RelationType.Serieuse),
+                              onTap: () => authProvider.selectRelationType(ERelationType.serious),
                               child: GradientTile(
                                 fontSizeScale: tileFontScale,
-                                isBackgroundUnique: authProvider.genderPreference.relationType == RelationType.Serieuse ? true : false,
+                                isBackgroundUnique: authProvider.genderPreference.relationType == ERelationType.serious ? true : false,
                                 tileAlignment: Alignment.center,
                                 tileText: 'Sérieuse',
                               )
@@ -139,10 +140,10 @@ class _GenderPageState extends State<GenderPage> {
                         SizedBox(
                           height: deviceHeight*tileScale,
                           child: GestureDetector(
-                              onTap: () => authProvider.selectRelationType(RelationType.Flirt),
+                              onTap: () => authProvider.selectRelationType(ERelationType.flirt),
                               child: GradientTile(
                                 fontSizeScale: tileFontScale,
-                                isBackgroundUnique: authProvider.genderPreference.relationType == RelationType.Flirt ? true : false,
+                                isBackgroundUnique: authProvider.genderPreference.relationType == ERelationType.flirt ? true : false,
                                 tileAlignment: Alignment.center,
                                 tileText: 'Flirt',
                               )

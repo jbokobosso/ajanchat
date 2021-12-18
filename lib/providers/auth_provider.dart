@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:ajanchat/constants/ajan_preferences.dart';
+import 'package:ajanchat/models/ERelationType.dart';
 import 'package:ajanchat/models/PreferenceModel.dart';
 import 'package:ajanchat/models/RelationPreferences.dart';
 import 'package:flutter/foundation.dart';
@@ -8,7 +9,7 @@ import 'package:image_picker/image_picker.dart';
 
 class AuthProvider extends ChangeNotifier {
 
-  RelationPreferences genderPreference = RelationPreferences(iam: Gender.Homme, iWannaMeet: Gender.Femme, relationType: RelationType.Flirt);
+  RelationPreferences genderPreference = RelationPreferences(iam: Gender.Homme, iWannaMeet: Gender.Femme, relationType: ERelationType.flirt);
   List<PreferenceModel> preferences = availablePreferences;
   late File image = File("");
   List<File> images = [];
@@ -39,15 +40,15 @@ class AuthProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void selectRelationType(RelationType relationType) {
+  void selectRelationType(ERelationType relationType) {
     switch(relationType) {
-      case RelationType.Amicale:
+      case ERelationType.friend:
         genderPreference.relationType = relationType;
         break;
-      case RelationType.Serieuse:
+      case ERelationType.serious:
         genderPreference.relationType = relationType;
         break;
-      case RelationType.Flirt:
+      case ERelationType.flirt:
         genderPreference.relationType = relationType;
         break;
     }

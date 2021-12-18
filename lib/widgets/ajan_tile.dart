@@ -1,11 +1,19 @@
 import 'dart:ui';
 
 import 'package:ajanchat/constants/file_assets.dart';
+import 'package:ajanchat/models/ajan_model.dart';
+import 'package:ajanchat/utils/utils.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_swipable/flutter_swipable.dart';
 
 class AjanTile extends StatefulWidget {
-  const AjanTile({Key? key}) : super(key: key);
+  AjanModel ajan;
+
+  AjanTile({
+    required this.ajan,
+    Key? key
+  }) : super(key: key);
 
   @override
   _AjanTileState createState() => _AjanTileState();
@@ -14,44 +22,58 @@ class AjanTile extends StatefulWidget {
 class _AjanTileState extends State<AjanTile> {
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      alignment: Alignment.bottomCenter,
-      children: [
-        ClipRRect(
-          borderRadius: BorderRadius.circular(25),
-          child: Container(
-            width: MediaQuery.of(context).size.width*0.7,
-            height: MediaQuery.of(context).size.height*0.5,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(30.0),
+    return SizedBox(
+      width: MediaQuery.of(context).size.width*0.7,
+      height: MediaQuery.of(context).size.height*0.5,
+      child: Swipable(
+        child: Stack(
+          alignment: Alignment.bottomCenter,
+          children: [
+            ClipRRect(
+              borderRadius: BorderRadius.circular(25),
+              child: ListView(
+                padding: EdgeInsets.zero,
+                children: widget.ajan.images.map((image) => Image.asset(image, fit: BoxFit.cover,)).toList(),
+              ),
             ),
-            child: ListView(
-              padding: EdgeInsets.zero,
-              children: [
-                Image.asset(FileAssets.ajan1, fit: BoxFit.cover,),
-                Image.asset(FileAssets.ajan2, fit: BoxFit.cover,)
-              ],
-            ),
-          ),
-        ),
-        ClipRect(
-          child: BackdropFilter(
-            filter: ImageFilter.blur(
-              sigmaX: 5,
-              sigmaY: 5
-            ),
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Column(
-                children: const [
-                  Text("Samantha, 18", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),),
-                  Text("Designer, Adorable, Cinema", style: TextStyle(color: Colors.white))
-                ],
+            SizedBox(
+              height: MediaQuery.of(context).size.height*0.11,
+              width: double.infinity,
+              child: ClipRect(
+                child: BackdropFilter(
+                  filter: ImageFilter.blur(
+                    sigmaX: 7,
+                    sigmaY: 7
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          "${widget.ajan.displayName}, ${Utils.calculateAge(widget.ajan.birthDate)}",
+                          style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                          textAlign: TextAlign.start,
+                        ),
+                        SizedBox(
+                          height: MediaQuery.of(context).size.height*0.05,
+                          child: ListView(
+                            padding: EdgeInsets.zero,
+                            scrollDirection: Axis.horizontal,
+                            children: widget.ajan.preferences.map(
+                              (pref) => Text(pref, style: const TextStyle(color: Colors.white60))
+                            ).toList(),
+                          ),
+                        )
+                      ],
+                    ),
+                  )
+                ),
               ),
             )
-          ),
-        )
-      ],
+          ],
+        ),
+      ),
     );
   }
 }
