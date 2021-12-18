@@ -62,7 +62,7 @@ class _PhonePageState extends State<PhonePage> {
               ),
               SizedBox(height: MediaQuery.of(context).size.height*textInputSpacingScale),
               GestureDetector(
-                onTap: () => Navigator.of(context).pushNamed(RouteNames.infos),
+                onTap: () => Navigator.of(context).pushNamed(RouteNames.otp),
                 child: const GradientTile(
                   tileAlignment: Alignment.centerRight,
                   tileText: 'Continuer',

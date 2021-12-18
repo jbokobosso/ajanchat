@@ -7,10 +7,12 @@ import 'package:ajanchat/pages/auth/pictures_page.dart';
 import 'package:ajanchat/pages/auth/preferences_page.dart';
 import 'package:ajanchat/pages/auth/register_page.dart';
 import 'package:ajanchat/pages/tabs/tabs_page.dart';
+import 'package:ajanchat/widgets/otp.dart';
 import 'package:flutter/material.dart';
 
 class RouteNames {
   static String auth = "/auth";
+  static String otp = "/otp";
   static String register = "/register";
   static String login = "/login";
   static String phone = "/phone";
@@ -23,6 +25,7 @@ class RouteNames {
 
 Map<String, Widget Function(BuildContext)> routes = <String, WidgetBuilder> {
   RouteNames.auth : (BuildContext context) => const AuthPage(),
+  RouteNames.otp : (BuildContext context) => Otp("+228 99 88 58 25"),
   RouteNames.register : (BuildContext context) => const RegisterPage(),
   RouteNames.login : (BuildContext context) => const LoginPage(),
   RouteNames.phone : (BuildContext context) => const PhonePage(),

@@ -1,5 +1,6 @@
 class FileAssets {
   static String logo = "assets/images/logo.png";
+  static String appIcon = "assets/icons/app-icon-2.png";
   static String bgImage = "assets/images/bg.png";
   static String riveLogoAnimation = "assets/rive/logo_animation.riv";
   static String callIcon = 'assets/icons/call.svg';

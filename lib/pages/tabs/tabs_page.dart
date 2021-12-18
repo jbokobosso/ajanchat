@@ -4,6 +4,7 @@ import 'package:ajanchat/pages/tabs/home_tab.dart';
 import 'package:ajanchat/pages/tabs/profile_tab.dart';
 import 'package:ajanchat/pages/tabs/settings_tab.dart';
 import 'package:ajanchat/providers/auth_provider.dart';
+import 'package:ajanchat/widgets/otp.dart';
 import 'package:animated_bottom_navigation_bar/animated_bottom_navigation_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
