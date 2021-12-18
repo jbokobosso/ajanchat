@@ -13,6 +13,7 @@ class AuthProvider extends ChangeNotifier {
   late File image = File("");
   List<File> images = [];
   final picker = ImagePicker();
+  var currentTabIndex = 0;
 
   void selectGender(Gender gender) {
     switch(gender) {
@@ -70,6 +71,11 @@ class AuthProvider extends ChangeNotifier {
 
   void clearPictures() {
     image = File("");
+    notifyListeners();
+  }
+
+  void changeTabIndex(int newIndex) {
+    currentTabIndex = newIndex;
     notifyListeners();
   }
 }
