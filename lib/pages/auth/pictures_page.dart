@@ -73,7 +73,7 @@ class _PicturesPageState extends State<PicturesPage> {
                   ),
                 ),
                 GestureDetector(
-                  onTap: () => Navigator.of(context).pushNamed(RouteNames.home),
+                  onTap: () => Navigator.of(context).pushNamed(RouteNames.tabs),
                   child: const GradientTile(
                       tileText: "S'inscrire",
                       tileAlignment: Alignment.centerRight),

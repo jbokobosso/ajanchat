@@ -6,7 +6,7 @@ import 'package:ajanchat/pages/auth/phone_page.dart';
 import 'package:ajanchat/pages/auth/pictures_page.dart';
 import 'package:ajanchat/pages/auth/preferences_page.dart';
 import 'package:ajanchat/pages/auth/register_page.dart';
-import 'package:ajanchat/pages/home/home_page.dart';
+import 'package:ajanchat/pages/tabs/tabs_page.dart';
 import 'package:flutter/material.dart';
 
 class RouteNames {
@@ -18,7 +18,7 @@ class RouteNames {
   static String gender = "/gender";
   static String preferences = "/preferences";
   static String pictures = "/pictures";
-  static String home = "/home";
+  static String tabs = "/tabs";
 }
 
 Map<String, Widget Function(BuildContext)> routes = <String, WidgetBuilder> {
@@ -30,5 +30,5 @@ Map<String, Widget Function(BuildContext)> routes = <String, WidgetBuilder> {
   RouteNames.gender : (BuildContext context) => const GenderPage(),
   RouteNames.preferences : (BuildContext context) => const PreferencesPage(),
   RouteNames.pictures : (BuildContext context) => const PicturesPage(),
-  RouteNames.home : (BuildContext context) => const HomePage(),
+  RouteNames.tabs : (BuildContext context) => const TabsPage(),
 };

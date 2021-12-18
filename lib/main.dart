@@ -33,7 +33,7 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.pink
       ),
       routes: routes,
-      initialRoute: RouteNames.home,
+      initialRoute: RouteNames.tabs,
     );
   }
 }
