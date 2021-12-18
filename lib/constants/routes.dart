@@ -14,6 +14,7 @@ class RouteNames {
   static String infos = "/infos";
   static String gender = "/gender";
   static String preferences = "/preferences";
+  static String pictures = "/pictures";
 }
 
 Map<String, Widget Function(BuildContext)> routes = <String, WidgetBuilder> {
