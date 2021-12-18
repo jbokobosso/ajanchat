@@ -29,6 +29,7 @@ environment:
 dependencies:
 
   # UI facilities
+  pin_code_fields: ^7.3.0
   animated_bottom_navigation_bar: ^0.3.2
   fluttertoast: ^8.0.8
   flutter_swipable: ^1.2.1
@@ -42,7 +43,7 @@ dependencies:
 
   # Media
   rive: ^0.7.33
-  lottie: ^1.0.1
+  lottie: ^1.2.1
   image_picker: ^0.7.4
   flutter_svg: ^0.21.0+1
 

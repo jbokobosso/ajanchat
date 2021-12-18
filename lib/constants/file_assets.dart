@@ -17,4 +17,5 @@ class FileAssets {
   static String homeIcon = 'assets/icons/homeIcon.svg';
   static String chatIcon = 'assets/icons/chatIcon.svg';
   static String profileIcon = 'assets/icons/profileIcon.svg';
+  static String heartLoading = 'assets/lottie/heart-loading.json';
 }
