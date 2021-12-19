@@ -1,6 +1,7 @@
 import 'package:ajanchat/constants/globals.dart';
 import 'package:ajanchat/constants/routes.dart';
 import 'package:ajanchat/providers/auth_provider.dart';
+import 'package:ajanchat/providers/chat_provider.dart';
 import 'package:ajanchat/providers/home_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -13,6 +14,7 @@ void main() async {
       providers: [
         ChangeNotifierProvider(create: (context) => AuthProvider()),
         ChangeNotifierProvider(create: (context) => HomeProvider()),
+        ChangeNotifierProvider(create: (context) => ChatProvider()),
       ],
       child: const MyApp(),
     ),
@@ -33,7 +35,7 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.pink
       ),
       routes: routes,
-      initialRoute: RouteNames.auth,
+      initialRoute: RouteNames.tabs,
     );
   }
 }

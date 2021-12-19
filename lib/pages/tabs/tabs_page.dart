@@ -1,5 +1,5 @@
 import 'package:ajanchat/constants/file_assets.dart';
-import 'package:ajanchat/pages/tabs/chat_tab.dart';
+import 'package:ajanchat/pages/tabs/chat/chat_tab.dart';
 import 'package:ajanchat/pages/tabs/home_tab.dart';
 import 'package:ajanchat/pages/tabs/profile_tab.dart';
 import 'package:ajanchat/pages/tabs/settings_tab.dart';
