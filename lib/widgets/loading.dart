@@ -18,7 +18,7 @@ class Loading extends StatelessWidget {
         ),
         child: Column(
           children: [
-            Expanded(child: Lottie.asset(FileAssets.heartLoading)),
+            Expanded(child: Lottie.asset(FileAssets.lottieHeartLoading)),
             const Text("Chargement...", style: TextStyle(color: Colors.pinkAccent),)
           ],
         ),

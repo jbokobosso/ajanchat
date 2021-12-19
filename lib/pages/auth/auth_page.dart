@@ -54,7 +54,7 @@ class _AuthPageState extends State<AuthPage> {
                   ),
                   SizedBox(height: 50),
                   GestureDetector(
-                    onTap: () => Navigator.pushNamed(context, RouteNames.login),
+                    onTap: () => Navigator.pushNamed(context, RouteNames.phone),
                     child: const GradientTile(
                       tileText: 'Se connecter',
                       tileAlignment: Alignment.centerRight,

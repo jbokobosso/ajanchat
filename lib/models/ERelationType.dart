@@ -1,5 +1,6 @@
 enum ERelationType {
   friend,
   flirt,
-  serious
+  serious,
+  spartan
 }

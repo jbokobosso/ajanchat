@@ -9,7 +9,7 @@ import 'package:image_picker/image_picker.dart';
 
 class AuthProvider extends ChangeNotifier {
 
-  RelationPreferences genderPreference = RelationPreferences(iam: Gender.Homme, iWannaMeet: Gender.Femme, relationType: ERelationType.flirt);
+  RelationPreferences genderPreference = RelationPreferences(iam: Gender.spartan, iWannaMeet: Gender.spartan, relationType: ERelationType.spartan);
   List<PreferenceModel> preferences = availablePreferences;
   late File image = File("");
   List<File> images = [];
@@ -18,10 +18,10 @@ class AuthProvider extends ChangeNotifier {
 
   void selectGender(Gender gender) {
     switch(gender) {
-      case Gender.Femme:
+      case Gender.female:
         genderPreference.iam = gender;
         break;
-      case Gender.Homme:
+      case Gender.male:
         genderPreference.iam = gender;
         break;
     }
@@ -30,10 +30,10 @@ class AuthProvider extends ChangeNotifier {
 
   void selectPartnerGender(Gender gender) {
     switch(gender) {
-      case Gender.Femme:
+      case Gender.female:
         genderPreference.iWannaMeet = gender;
         break;
-      case Gender.Homme:
+      case Gender.male:
         genderPreference.iWannaMeet = gender;
         break;
     }

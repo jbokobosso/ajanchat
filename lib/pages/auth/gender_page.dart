@@ -5,8 +5,10 @@ import 'package:ajanchat/models/RelationPreferences.dart';
 import 'package:ajanchat/providers/auth_provider.dart';
 import 'package:ajanchat/widgets/curved_top_background.dart';
 import 'package:ajanchat/widgets/gradient_tile.dart';
+import 'package:ajanchat/widgets/info_alert.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:lottie/lottie.dart';
 import 'package:provider/provider.dart';
 
 class GenderPage extends StatefulWidget {
@@ -58,10 +60,10 @@ class _GenderPageState extends State<GenderPage> {
                         SizedBox(
                           height: deviceHeight*tileScale,
                           child: GestureDetector(
-                              onTap: () => authProvider.selectGender(Gender.Homme),
+                              onTap: () => authProvider.selectGender(Gender.male),
                               child: GradientTile(
                                 fontSizeScale: tileFontScale,
-                                isBackgroundUnique: authProvider.genderPreference.iam == Gender.Homme ? true : false,
+                                isBackgroundUnique: authProvider.genderPreference.iam == Gender.male ? true : false,
                                 tileAlignment: Alignment.centerLeft,
                                 tileText: 'Homme',
                               )
@@ -71,10 +73,10 @@ class _GenderPageState extends State<GenderPage> {
                         SizedBox(
                           height: deviceHeight*tileScale,
                           child: GestureDetector(
-                              onTap: () => authProvider.selectGender(Gender.Femme),
+                              onTap: () => authProvider.selectGender(Gender.female),
                               child: GradientTile(
                                 fontSizeScale: tileFontScale,
-                                isBackgroundUnique: authProvider.genderPreference.iam == Gender.Femme ? true : false,
+                                isBackgroundUnique: authProvider.genderPreference.iam == Gender.female ? true : false,
                                 tileAlignment: Alignment.centerRight,
                                 tileText: 'Femme',
                               )
@@ -86,10 +88,16 @@ class _GenderPageState extends State<GenderPage> {
                         SizedBox(
                           height: deviceHeight*tileScale,
                           child: GestureDetector(
-                              onTap: () => authProvider.selectPartnerGender(Gender.Homme),
+                              onTap: ()
+                              {
+                                    authProvider.selectPartnerGender(Gender.male);
+                                    if(authProvider.genderPreference.iam == authProvider.genderPreference.iWannaMeet) {
+                                      showDialog(context: context, builder: (_) => InfoAlert("Nous n'aimons pas les pédés", FileAssets.lottieMad));
+                                    }
+                                  },
                               child: GradientTile(
                                 fontSizeScale: tileFontScale,
-                                isBackgroundUnique: authProvider.genderPreference.iWannaMeet == Gender.Homme ? true : false,
+                                isBackgroundUnique: authProvider.genderPreference.iWannaMeet == Gender.male ? true : false,
                                 tileAlignment: Alignment.centerLeft,
                                 tileText: 'Homme',
                               )
@@ -99,10 +107,15 @@ class _GenderPageState extends State<GenderPage> {
                         SizedBox(
                           height: deviceHeight*tileScale,
                           child: GestureDetector(
-                              onTap: () => authProvider.selectPartnerGender(Gender.Femme),
+                              onTap: () {
+                                    authProvider.selectPartnerGender(Gender.female);
+                                    if(authProvider.genderPreference.iam == authProvider.genderPreference.iWannaMeet) {
+                                      showDialog(context: context, builder: (_) => InfoAlert("Pas de lécheuse de chattes permis", FileAssets.lottieMad));
+                                    }
+                                  },
                               child: GradientTile(
                                 fontSizeScale: tileFontScale,
-                                isBackgroundUnique: authProvider.genderPreference.iWannaMeet == Gender.Femme ? true : false,
+                                isBackgroundUnique: authProvider.genderPreference.iWannaMeet == Gender.female ? true : false,
                                 tileAlignment: Alignment.centerRight,
                                 tileText: 'Femme',
                               )
@@ -149,9 +162,15 @@ class _GenderPageState extends State<GenderPage> {
                               )
                           ),
                         ),
-                        SizedBox(height: 30),
+                        const SizedBox(height: 30),
                         GestureDetector(
-                          onTap: () => Navigator.of(context).pushNamed(RouteNames.preferences),
+                          onTap: () {
+                            if(authProvider.genderPreference.iam == authProvider.genderPreference.iWannaMeet) {
+                              showDialog(context: context, builder: (_) => InfoAlert("Tu n'as pas encore compris ? On ne permet pas de pédés ni lesbiennes ici en fait", FileAssets.lottieAstonished, title: "Voyou !".toUpperCase(),));
+                            } else {
+                              Navigator.of(context).pushNamed(RouteNames.preferences);
+                            }
+                          },
                           child: const GradientTile(
                             tileAlignment: Alignment.centerRight,
                             tileText: 'Continuer',
