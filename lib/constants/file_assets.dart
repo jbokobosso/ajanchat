@@ -20,4 +20,8 @@ class FileAssets {
   static String profileIcon = 'assets/icons/profileIcon.svg';
   static String heartLoading = 'assets/lottie/heart-loading.json';
   static String onlineIcon = "assets/icons/online.svg";
+  static String cameraIcon = "assets/icons/camera.svg";
+  static String voiceIcon = "assets/icons/voice.svg";
+  static String heardIcon = "assets/icons/heart.svg";
+  static String sendIcon = "assets/icons/send.svg";
 }

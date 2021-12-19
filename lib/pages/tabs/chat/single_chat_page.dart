@@ -1,7 +1,11 @@
+import 'package:ajanchat/constants/file_assets.dart';
 import 'package:ajanchat/pages/tabs/chat/chat_app_bar.dart';
 import 'package:ajanchat/pages/tabs/chat/chat_bubble.dart';
+import 'package:ajanchat/providers/chat_provider.dart';
+import 'package:ajanchat/utils/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:provider/provider.dart';
 
 class SingleChatPage extends StatefulWidget {
   const SingleChatPage({Key? key}) : super(key: key);
@@ -11,6 +15,12 @@ class SingleChatPage extends StatefulWidget {
 }
 
 class _SingleChatPageState extends State<SingleChatPage> {
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
 
@@ -34,28 +44,33 @@ class _SingleChatPageState extends State<SingleChatPage> {
                 ],
               ),
             ),
-            Row(
-              children: [
-                IconButton(icon: SvgPicture.asset("assets/icons/heart.svg"), onPressed: () => print('Show emoji keyboard')),
-                SizedBox(
-                  width: MediaQuery.of(context).size.width*0.65,
-                  child: TextFormField(
-                    decoration: InputDecoration(
-                        filled: false,
-                        hintText: 'Hint Text',
-                        hintStyle: TextStyle(color: Colors.black),
-                        suffixIcon: Row(
-                          mainAxisAlignment: MainAxisAlignment.end,
-                          children: [
-                            IconButton(icon: SvgPicture.asset("assets/icons/camera.svg"), onPressed: () => print('show gallery to choose picture')),
-                            IconButton(icon: SvgPicture.asset("assets/icons/voice.svg"), onPressed: () => print('record voice message')),
-                          ],),
-                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(20.0), borderSide: BorderSide(color: Colors.grey, width: 1.0, style: BorderStyle.solid))
+            Consumer<ChatProvider>(
+              builder: (context, chatProvider, child) => Row(
+                children: [
+                  IconButton(icon: SvgPicture.asset(FileAssets.heardIcon, width: 25.0,), onPressed: () => print('Show emoji keyboard')),
+                  SizedBox(
+                    width: MediaQuery.of(context).size.width*0.67,
+                    child: TextFormField(
+                      controller: chatProvider.chatController,
+                      decoration: InputDecoration(
+                          filled: true,
+                          hintText: 'Hint Text',
+                          hintStyle: const TextStyle(color: Colors.black),
+                          suffixIcon: Container(
+                              padding: EdgeInsets.zero,
+                              width: MediaQuery.of(context).size.width*0.10,
+                              child: IconButton(icon: SvgPicture.asset(FileAssets.cameraIcon, width: 20.0,), onPressed: () => print('show gallery to choose picture'))
+                          ),
+                          border: OutlineInputBorder(borderRadius: BorderRadius.circular(20.0), borderSide: BorderSide(color: Colors.grey, width: 1.0, style: BorderStyle.solid))
+                      ),
+                      onChanged: (value) => chatProvider.notifyForInputChange(),
                     ),
                   ),
-                ),
-                IconButton(icon: SvgPicture.asset("assets/icons/send.svg"), onPressed: () => print('send message'))
-              ],
+                  chatProvider.chatController.text == ""
+                      ? IconButton(icon: SvgPicture.asset(FileAssets.voiceIcon, width: 25.0,), onPressed: () => Utils.showToast("Record message"))
+                      : IconButton(icon: SvgPicture.asset(FileAssets.sendIcon, width: 25.0,), onPressed: () => Utils.showToast("Send message"))
+                ],
+              )
             )
           ],
         ),

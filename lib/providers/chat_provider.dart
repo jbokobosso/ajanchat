@@ -1,5 +1,6 @@
 import 'package:ajanchat/models/ChatTileModel.dart';
 import 'package:ajanchat/models/ERelationType.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 
 class ChatProvider extends ChangeNotifier {
@@ -13,4 +14,10 @@ class ChatProvider extends ChangeNotifier {
     ChatTileModel(username: "Gloria", lastMessage: "comment tu vas ?", lastMessageTime: DateTime.now(), unreadCount: 15, assetImage: "assets/images/person-1.jpg", isOnline: true, relationType: ERelationType.serious),
     ChatTileModel(username: "Constance", lastMessage: "comment tu vas ?", lastMessageTime: DateTime.now(), unreadCount: 1, assetImage: "assets/images/person-1.jpg", relationType: ERelationType.friend),
   ];
+
+  TextEditingController chatController = TextEditingController();
+
+  notifyForInputChange() {
+    notifyListeners();
+  }
 }
