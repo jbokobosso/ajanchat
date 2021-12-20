@@ -1,0 +1,1 @@
+const S_isAuthenticated = "isAuthenticated";

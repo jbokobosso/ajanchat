@@ -1,16 +1,20 @@
 import 'dart:async';
 
 import 'package:ajanchat/constants/file_assets.dart';
+import 'package:ajanchat/constants/globals.dart';
 import 'package:ajanchat/constants/routes.dart';
+import 'package:ajanchat/providers/auth_provider.dart';
+import 'package:ajanchat/utils/utils.dart';
 import 'package:ajanchat/widgets/loading.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
+import 'package:provider/provider.dart';
 
 class Otp extends StatefulWidget {
-  final String? phoneNumber;
 
-  Otp(this.phoneNumber);
+  Otp();
 
   @override
   _OtpState createState() =>
@@ -46,13 +50,18 @@ class _OtpState extends State<Otp> {
     return ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(message!),
-        duration: Duration(seconds: 2),
+        duration: const Duration(seconds: 2),
       ),
     );
   }
 
   @override
   Widget build(BuildContext context) {
+
+    dynamic params = ModalRoute.of(context)?.settings.arguments;
+    String phone = params['phoneNumber'];
+    String code = params['code'];
+
     return Scaffold(
       body: Stack(
         children: [
@@ -90,7 +99,7 @@ class _OtpState extends State<Otp> {
                           text: "Entrez le code envoyé au ",
                           children: [
                             TextSpan(
-                                text: "${widget.phoneNumber}",
+                                text: phone,
                                 style: const TextStyle(
                                     color: Colors.black,
                                     fontWeight: FontWeight.bold,
@@ -119,7 +128,7 @@ class _OtpState extends State<Otp> {
                           animationType: AnimationType.fade,
                           validator: (v) {
                             if (v!.length < 3) {
-                              return "I'm from validator";
+                              return "Veuillez tout remplir";
                             } else {
                               return null;
                             }
@@ -132,7 +141,7 @@ class _OtpState extends State<Otp> {
                             activeFillColor: Colors.white,
                           ),
                           cursorColor: Colors.black,
-                          animationDuration: Duration(milliseconds: 300),
+                          animationDuration: const Duration(milliseconds: 300),
                           enableActiveFill: true,
                           errorAnimationController: errorController,
                           controller: textEditingController,
@@ -170,12 +179,14 @@ class _OtpState extends State<Otp> {
                   ),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 30.0),
-                    child: Text(
-                      hasError ? "*Veuillez tout remplir svp" : "",
-                      style: const TextStyle(
-                          color: Colors.red,
-                          fontSize: 12,
-                          fontWeight: FontWeight.w400),
+                    child: Consumer<AuthProvider>(
+                      builder: (context, authProvider, child) => Text(
+                        authProvider.otpErrorMessage != "" ? authProvider.otpErrorMessage : "",
+                        style: const TextStyle(
+                            color: Colors.red,
+                            fontSize: 12,
+                            fontWeight: FontWeight.w400),
+                      )
                     ),
                   ),
                   Row(
@@ -186,7 +197,10 @@ class _OtpState extends State<Otp> {
                         style: TextStyle(color: Colors.black54, fontSize: 15),
                       ),
                       TextButton(
-                          onPressed: () => snackBar("Code renvoyé!!"),
+                          onPressed: () async {
+                            await Provider.of<AuthProvider>(context, listen: false).authenticateByFirebase(phone);
+                            Utils.showToast("Code renvoyé !");
+                          },
                           child: const Text(
                             "RENVOYER",
                             style: TextStyle(
@@ -197,57 +211,39 @@ class _OtpState extends State<Otp> {
                     ],
                   ),
                   Container(
-                    margin:
-                    const EdgeInsets.symmetric(vertical: 16.0, horizontal: 30),
+                    decoration: BoxDecoration(
+                          color: Colors.green.shade300,
+                          borderRadius: BorderRadius.circular(5),
+                          boxShadow: [
+                            BoxShadow(
+                                color: Colors.green.shade200,
+                                offset: const Offset(1, -2),
+                                blurRadius: 5),
+                            BoxShadow(
+                                color: Colors.green.shade200,
+                                offset: const Offset(-1, 2),
+                                blurRadius: 5)
+                          ]),
+                    margin: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 30),
                     child: ButtonTheme(
                       height: 50,
                       child: TextButton(
-                        onPressed: () {
+                        onPressed: () async {
                           formKey.currentState!.validate();
                           // conditions for validating
-                          if (currentText.length != 6 || currentText != "123456") {
-                            errorController!.add(ErrorAnimationType
-                                .shake); // Triggering error shake animation
+                          if (currentText.length != 6 || await Provider.of<AuthProvider>(context, listen: false).verifyCodeSentManually(code, currentText) == false) {
+                            errorController!.add(ErrorAnimationType.shake); // Triggering error shake animation
                             setState(() => hasError = true);
                           } else {
-                            setState(
-                                  () {
-                                hasError = false;
-                                isBusy = true;
-                                Future.delayed(const Duration(milliseconds: 1000), () {
-                                  Navigator.of(context).pushNamed(RouteNames.infos);
-                                  snackBar("Code vérifié!!");
-                                  isBusy = false;
-                                });
-
-                              },
-                            );
-
+                            setState((){
+                              hasError = false;
+                              Navigator.of(context).pushNamed(RouteNames.infos);
+                              Utils.showToast("Code vérifié!!");
+                            });
                           }
                         },
-                        child: Center(
-                            child: Text(
-                              "Vérifier".toUpperCase(),
-                              style: const TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold),
-                            )),
-                      ),
-                    ),
-                    decoration: BoxDecoration(
-                        color: Colors.green.shade300,
-                        borderRadius: BorderRadius.circular(5),
-                        boxShadow: [
-                          BoxShadow(
-                              color: Colors.green.shade200,
-                              offset: const Offset(1, -2),
-                              blurRadius: 5),
-                          BoxShadow(
-                              color: Colors.green.shade200,
-                              offset: const Offset(-1, 2),
-                              blurRadius: 5)
-                        ]),
+                        child: Center(child: Text("Vérifier".toUpperCase(), style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),)),)
+                    )
                   ),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -264,7 +260,7 @@ class _OtpState extends State<Otp> {
                             child: const Text("Affecter Valeur Dev"),
                             onPressed: () {
                               setState(() {
-                                textEditingController.text = "123456";
+                                textEditingController.text = Globals.firebaseDevSmsCode;
                               });
                             },
                           )) : Container(),

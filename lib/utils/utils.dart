@@ -17,4 +17,23 @@ class Utils {
       fontSize: 16.0
     );
   }
+
+  static String getFirebaseErrorMessageByCode(String code) {
+    String result = "";
+    switch(code) {
+      case 'session-expired':
+        result = 'Le code SMS a expiré. Veuillez renvoyer le code de vérification pour réessayer.';
+      break;
+      case 'auth/user-not-found':
+        result = 'Aucun utilisateur ne correspond à ce mail.';
+      break;
+      case 'auth/email-already-in-use':
+        result = 'Cette adresse email est déjà utilisée.';
+      break;
+      case 'invalid-verification-code':
+        result = 'Code invalide.';
+      break;
+    }
+    return result;
+  }
 }

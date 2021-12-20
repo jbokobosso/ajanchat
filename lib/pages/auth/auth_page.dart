@@ -1,6 +1,7 @@
 import 'package:ajanchat/constants/file_assets.dart';
 import 'package:ajanchat/constants/routes.dart';
 import 'package:ajanchat/widgets/gradient_tile.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:rive/rive.dart';
 

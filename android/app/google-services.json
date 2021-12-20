@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "520794138020",
+    "project_id": "ajan-chat",
+    "storage_bucket": "ajan-chat.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:520794138020:android:055e04226a9a0c181e8d31",
+        "android_client_info": {
+          "package_name": "com.josuebokobosso.ajanchat"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "520794138020-lpeotodtsdhor8osgaojkao9bbg4butf.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.josuebokobosso.ajanchat",
+            "certificate_hash": "ce32b540e507716c2aaea8fd2769cfb61e79b11c"
+          }
+        },
+        {
+          "client_id": "520794138020-nj621ge8vvjk5p0sn0kvhm1d3bgl85gr.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB1x8qWR6dOeNxi2YJ0WCSvHtsNx72bEYw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "520794138020-nj621ge8vvjk5p0sn0kvhm1d3bgl85gr.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

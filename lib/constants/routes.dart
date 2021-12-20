@@ -27,7 +27,7 @@ class RouteNames {
 
 Map<String, Widget Function(BuildContext)> routes = <String, WidgetBuilder> {
   RouteNames.auth : (BuildContext context) => const AuthPage(),
-  RouteNames.otp : (BuildContext context) => Otp("+228 99 88 58 25"),
+  RouteNames.otp : (BuildContext context) => Otp(),
   RouteNames.register : (BuildContext context) => const RegisterPage(),
   RouteNames.login : (BuildContext context) => const LoginPage(),
   RouteNames.phone : (BuildContext context) => const PhonePage(),
