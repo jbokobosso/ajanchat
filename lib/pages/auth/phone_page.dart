@@ -1,10 +1,13 @@
 import 'package:ajanchat/constants/file_assets.dart';
 import 'package:ajanchat/constants/routes.dart';
+import 'package:ajanchat/providers/auth_provider.dart';
 import 'package:ajanchat/widgets/curved_top_background.dart';
 import 'package:ajanchat/widgets/custom_app_bar.dart';
 import 'package:ajanchat/widgets/gradient_tile.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:intl_phone_number_input/intl_phone_number_input.dart';
+import 'package:provider/provider.dart';
 
 class PhonePage extends StatefulWidget {
   const PhonePage({Key? key}) : super(key: key);
@@ -38,38 +41,47 @@ class _PhonePageState extends State<PhonePage> {
       body: Stack(
         children: [
           CurvedTopBackground(deviceHeight: MediaQuery.of(context).size.height, clipBarSizeScale: topCurvedHeightScale),
-          ListView(
-            children: [
-              SizedBox(height: MediaQuery.of(context).size.height*topCurvedHeightScale),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 30.0),
-                child: Form(
-                    child: TextFormField(
-                        keyboardType: TextInputType.phone,
-                        decoration: InputDecoration(
-                            icon: SvgPicture.asset(FileAssets.callIcon),
-                            labelText: 'Numéro de téléphone',
-                            border: const OutlineInputBorder(
-                                borderSide: BorderSide(
-                                    color: Colors.deepPurple,
-                                    width: 5.0,
-                                    style: BorderStyle.solid
-                                )
-                            )
-                        )
-                    )
-                ),
-              ),
-              SizedBox(height: MediaQuery.of(context).size.height*textInputSpacingScale),
-              GestureDetector(
-                onTap: () => Navigator.of(context).pushNamed(RouteNames.otp),
-                child: const GradientTile(
-                  tileAlignment: Alignment.centerRight,
-                  tileText: 'Continuer',
-                ),
-              )
+          Consumer<AuthProvider>(
+            builder: (context, authProvider, child) => ListView(
+              children: [
+                SizedBox(height: MediaQuery.of(context).size.height*topCurvedHeightScale),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 30.0),
+                  child: Form(
+                      key: authProvider.registerFormKey,
+                      child: Column(
+                        children: [
+                          InternationalPhoneNumberInput(
+                            onInputChanged: (PhoneNumber number) {
+                              print(number.phoneNumber);
+                            },
+                            selectorConfig: const SelectorConfig(
+                              selectorType: PhoneInputSelectorType.BOTTOM_SHEET,
+                            ),
+                            ignoreBlank: true,
+                            autoValidateMode: AutovalidateMode.disabled,
+                            selectorTextStyle: const TextStyle(color: Colors.black),
+                            textFieldController: authProvider.phoneController,
+                            formatInput: true,
+                            keyboardType: TextInputType.phone,
+                            inputBorder: const OutlineInputBorder(),
+                            countries: const ['TG', 'BF', 'BJ', 'GH'],
 
-            ],
+                          )
+                        ],
+                      )
+                  ),
+                ),
+                SizedBox(height: MediaQuery.of(context).size.height*textInputSpacingScale),
+                GestureDetector(
+                  onTap: () => authProvider.onRegisterFormSaved(context),
+                  child: const GradientTile(
+                    tileAlignment: Alignment.centerRight,
+                    tileText: 'Continuer',
+                  ),
+                )
+              ],
+            )
           )
         ],
       ),

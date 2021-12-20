@@ -1,9 +1,12 @@
 import 'dart:io';
 
 import 'package:ajanchat/constants/ajan_preferences.dart';
+import 'package:ajanchat/constants/routes.dart';
 import 'package:ajanchat/models/ERelationType.dart';
 import 'package:ajanchat/models/PreferenceModel.dart';
 import 'package:ajanchat/models/RelationPreferences.dart';
+import 'package:ajanchat/utils/utils.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -15,6 +18,16 @@ class AuthProvider extends ChangeNotifier {
   List<File> images = [];
   final picker = ImagePicker();
   var currentTabIndex = 0;
+  TextEditingController phoneController = TextEditingController();
+  GlobalKey<FormState> registerFormKey = GlobalKey<FormState>();
+
+  void onRegisterFormSaved(BuildContext context) {
+    bool isValid = registerFormKey.currentState!.validate();
+    if(isValid) {
+      Utils.showToast(phoneController.text);
+      Navigator.of(context).pushNamed(RouteNames.otp);
+    }
+  }
 
   void selectGender(Gender gender) {
     switch(gender) {

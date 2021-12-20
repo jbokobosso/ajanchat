@@ -29,6 +29,7 @@ environment:
 dependencies:
 
   # UI facilities
+  intl_phone_number_input: ^0.7.0+2
   pin_code_fields: ^7.3.0
   animated_bottom_navigation_bar: ^0.3.2
   fluttertoast: ^8.0.8

@@ -165,7 +165,7 @@ class _GenderPageState extends State<GenderPage> {
                         const SizedBox(height: 30),
                         GestureDetector(
                           onTap: () {
-                            if(authProvider.genderPreference.iam == authProvider.genderPreference.iWannaMeet) {
+                            if(authProvider.genderPreference.iam == authProvider.genderPreference.iWannaMeet && authProvider.genderPreference.iam != Gender.spartan) {
                               showDialog(context: context, builder: (_) => InfoAlert("Tu n'as pas encore compris ? On ne permet pas de pédés ni lesbiennes ici en fait", FileAssets.lottieAstonished, title: "Voyou !".toUpperCase(),));
                             } else {
                               Navigator.of(context).pushNamed(RouteNames.preferences);
