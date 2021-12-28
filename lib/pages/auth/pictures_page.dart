@@ -1,5 +1,8 @@
+import 'dart:io';
+
 import 'package:ajanchat/constants/file_assets.dart';
 import 'package:ajanchat/constants/routes.dart';
+import 'package:ajanchat/models/image_card_model.dart';
 import 'package:ajanchat/providers/auth_provider.dart';
 import 'package:ajanchat/widgets/gradient_tile.dart';
 import 'package:flutter/material.dart';
@@ -61,52 +64,62 @@ class _PicturesPageState extends State<PicturesPage> {
                       crossAxisCount: 3,
                       crossAxisSpacing: 5,
                       mainAxisSpacing: 5,
-                      children: const [
-                        ImageCard(),
-                        ImageCard(),
-                        ImageCard(),
-                        ImageCard(),
-                        ImageCard(),
-                        ImageCard(),
+                      children: [
+                        ImageCard(0, Provider.of<AuthProvider>(context).images[0].image),
+                        ImageCard(1, Provider.of<AuthProvider>(context).images[1].image),
+                        ImageCard(2, Provider.of<AuthProvider>(context).images[2].image),
+                        ImageCard(3, Provider.of<AuthProvider>(context).images[3].image),
+                        ImageCard(4, Provider.of<AuthProvider>(context).images[4].image),
+                        ImageCard(5, Provider.of<AuthProvider>(context).images[5].image),
                       ],
                     ),
                   ),
                 ),
                 GestureDetector(
-                  onTap: () => Navigator.of(context).pushNamed(RouteNames.tabs),
+                  onTap: () => Provider.of<AuthProvider>(context, listen: false).onPicturesFormSaved(context),
                   child: const GradientTile(
                       tileText: "S'inscrire",
                       tileAlignment: Alignment.centerRight),
                 ),
+                Consumer<AuthProvider>(
+                  builder: (context, authProvider, child) => authProvider.isUploading ? Column(
+                    children: [
+                      const Text("Téléversement des images"),
+                      Text("${authProvider.uploadPercentage.toString()} %")
+                    ],
+                  ) : Container()
+                )
               ],
             )));
   }
 }
 
 class ImageCard extends StatelessWidget {
-  const ImageCard({Key? key}) : super(key: key);
+  int index;
+  File image = File("");
+  ImageCard(this.index, this.image, {Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Consumer<AuthProvider>(
       builder: (context, authProvider, child) => GestureDetector(
-        onTap: () => authProvider.pickImage(),
+        onTap: () => authProvider.pickImage(index),
         child: Stack(
           alignment: Alignment.center,
           children: [
-            authProvider.image.path == ""
+            image.path == ""
                 ? Container(color: const Color(0xD1D1D1D1))
-                : Image.file(Provider.of<AuthProvider>(context).image, fit: BoxFit.cover, width: double.infinity, height: double.infinity),
-            authProvider.image.path == ""
+                : Image.file(image, fit: BoxFit.cover, width: double.infinity, height: double.infinity),
+            image.path == ""
                 ? const Icon(Icons.add_circle_outline, color: Color(0x90909090))
                 : Container(),
             Positioned(
-                child: authProvider.image.path != ""
+                child: image.path != ""
                     ? GestureDetector(
-                      onTap: () => authProvider.clearPictures(),
+                      onTap: () => authProvider.clearPictures(index),
                       child: Container(
-                          child: IconButton(icon: SvgPicture.asset(FileAssets.closeIcon), onPressed: () => authProvider.clearPictures()),
-                          decoration: BoxDecoration(color: Color(0x80ffffff)),
+                          child: IconButton(icon: SvgPicture.asset(FileAssets.closeIcon), onPressed: () => authProvider.clearPictures(index)),
+                          decoration: const BoxDecoration(color: Color(0x80ffffff)),
                         ),
                     )
                     : Container()

@@ -63,7 +63,7 @@ class _PreferencesPageState extends State<PreferencesPage> {
               bottom: 20,
               right: 0,
               child: GestureDetector(
-                onTap: () => Navigator.of(context).pushNamed(RouteNames.pictures),
+                onTap: () => Provider.of<AuthProvider>(context, listen: false).onPreferencesFormSaved(context),
                 child: const GradientTile(
                   tileAlignment: Alignment.centerRight,
                   tileText: "Continuer",
@@ -98,7 +98,7 @@ class PreferenceBubble extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () => Provider.of<AuthProvider>(context).selectOrUnselectPreference(index),
+      onTap: () => Provider.of<AuthProvider>(context, listen: false).selectOrUnselectPreference(index),
       child: AlignPositioned(
         alignment: Alignment.topLeft,
         childWidth: width,
@@ -108,7 +108,7 @@ class PreferenceBubble extends StatelessWidget {
         child: Container(
             child: Center(child: Text(preference.label, style: TextStyle(color: preference.isChosen ? Colors.white : Colors.black),)),
             decoration: BoxDecoration(
-                color: preference.isChosen ? Colors.black : Color.fromRGBO(232, 232, 232, 1),
+                color: preference.isChosen ? Colors.black : const Color.fromRGBO(232, 232, 232, 1),
                 shape: BoxShape.circle
             )),
       ),

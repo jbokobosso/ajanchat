@@ -1,22 +1,36 @@
 import 'dart:io';
 
 import 'package:ajanchat/constants/ajan_preferences.dart';
+import 'package:ajanchat/constants/file_assets.dart';
+import 'package:ajanchat/constants/globals.dart';
 import 'package:ajanchat/constants/routes.dart';
 import 'package:ajanchat/constants/shared_preferences.dart';
 import 'package:ajanchat/models/ERelationType.dart';
 import 'package:ajanchat/models/PreferenceModel.dart';
 import 'package:ajanchat/models/RelationPreferences.dart';
 import 'package:ajanchat/models/ajan_model.dart';
+import 'package:ajanchat/models/image_card_model.dart';
+import 'package:ajanchat/models/place_model.dart';
 import 'package:ajanchat/utils/utils.dart';
+import 'package:ajanchat/widgets/info_alert.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl_phone_number_input/intl_phone_number_input.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AuthProvider extends ChangeNotifier {
 
-  AjanModel signupAjan = AjanModel(phoneNumber: "", preferences: [], images: [], birthDate: DateTime.fromMicrosecondsSinceEpoch(1000));
+  AjanModel signupAjan = AjanModel(
+    phoneNumber: "",
+    preferences: [],
+    images: [],
+    birthDate: DateTime.fromMicrosecondsSinceEpoch(1000),
+    relationPreferences: RelationPreferences(iam: Gender.spartan, iWannaMeet: Gender.spartan, relationType: ERelationType.spartan)
+  );
   bool isBusy = false;
   String errorMessage  = "";
   String otpErrorMessage = "";
@@ -24,12 +38,30 @@ class AuthProvider extends ChangeNotifier {
   FirebaseAuth firebaseAuth = FirebaseAuth.instance;
   RelationPreferences genderPreference = RelationPreferences(iam: Gender.spartan, iWannaMeet: Gender.spartan, relationType: ERelationType.spartan);
   List<PreferenceModel> preferences = availablePreferences;
-  late File image = File("");
-  List<File> images = [];
+  List<ImageCardModel> images = [
+    ImageCardModel(image: File("")),
+    ImageCardModel(image: File("")),
+    ImageCardModel(image: File("")),
+    ImageCardModel(image: File("")),
+    ImageCardModel(image: File("")),
+    ImageCardModel(image: File(""))
+  ];
   final picker = ImagePicker();
   var currentTabIndex = 0;
   PhoneNumber phoneNumberInput = PhoneNumber(dialCode: '+1', phoneNumber: '0');
+
+  TextEditingController firstnameController = TextEditingController();
+  TextEditingController lastnameController = TextEditingController();
+  TextEditingController birthdateController = TextEditingController();
+  TextEditingController locationController = TextEditingController();
+  DateTime birthdateValue = DateTime(2021);
+  PlaceModel locationValue = PlaceModel(0, 0);
+
   GlobalKey<FormState> registerFormKey = GlobalKey<FormState>();
+  GlobalKey<FormState> infosFormKey = GlobalKey<FormState>();
+  String uploadPercentage = "0";
+  bool isUploading = false;
+
 
   void onRegisterFormSaved(BuildContext context) async {
     isBusy = true;
@@ -182,23 +214,107 @@ class AuthProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> pickImage() async {
+  Future<void> pickImage(int index) async {
     final pickedFile = await picker.getImage(source: ImageSource.gallery);
     if (pickedFile != null) {
-      image = File(pickedFile.path);
+      images[index].image = File(pickedFile.path);
+      images[index].isFilled = true;
+      notifyListeners();
     } else {
-      // this.coreService.showToast("Pas d'image sélectionnée");
+      Utils.showToast("Acune image sélecionnée !");
     }
     notifyListeners();
   }
 
-  void clearPictures() {
-    image = File("");
+  void clearPictures(int index) {
+    images[index].isFilled = false;
+    images[index].image = File("");
     notifyListeners();
   }
 
   void changeTabIndex(int newIndex) {
     currentTabIndex = newIndex;
     notifyListeners();
+  }
+
+  void onInfosFormSaved(BuildContext context) async {
+    bool isValid = infosFormKey.currentState!.validate();
+    if(isValid) {
+      signupAjan.displayName = "${firstnameController.text.trim()} ${lastnameController.text.toUpperCase().trim()}";
+      signupAjan.birthDate = birthdateValue;
+      signupAjan.location = locationValue;
+      Navigator.pushNamed(context, RouteNames.gender);
+    }
+    if (kDebugMode) {
+      print(signupAjan);
+    }
+  }
+
+  void onLocationTapped() {
+    locationController.text = "${locationValue.latitude}, ${locationValue.longitude}";
+    notifyListeners();
+  }
+
+  void onGenderFormSaved(BuildContext context) {
+    if(genderPageIsValid(context)) {
+      signupAjan.relationPreferences!.iam = genderPreference.iam;
+      signupAjan.relationPreferences!.iWannaMeet = genderPreference.iWannaMeet;
+      signupAjan.relationPreferences!.relationType = genderPreference.relationType;
+      Navigator.pushNamed(context, RouteNames.preferences);
+      if (kDebugMode) {
+        print(signupAjan);
+      }
+    } else {
+      showDialog(context: context, builder: (_) => InfoAlert("Veuillez remplir tous les champs", imageAsset: FileAssets.crossIcon));
+    }
+  }
+  
+  void onPreferencesFormSaved(BuildContext context) {
+    signupAjan.preferences = preferences.where((element) => element.isChosen == true).map((e) => e.label).toList();
+    Navigator.of(context).pushNamed(RouteNames.pictures);
+    if (kDebugMode) {
+      print(signupAjan);
+    }
+  }
+
+  void onPicturesFormSaved(BuildContext context) {
+    signupAjan.images = images.where((element) => element.isFilled == true).map((e) => e.image.path).toList();
+    if (kDebugMode) {
+      print(signupAjan);
+    }
+    signupUser(context);
+  }
+
+  signupUser(BuildContext context) async {
+    isUploading = true;
+    notifyListeners();
+    for (var imagePath in signupAjan.images) {
+      FirebaseStorage.instance
+          .ref(Globals.FSN_profile_pictures)
+          .child(FirebaseAuth.instance.currentUser!.uid)
+          .child(imagePath.split("/").last)
+          .putFile(File(imagePath))
+          .snapshotEvents.listen((taskSnapshot) {
+            uploadPercentage = ((100 / taskSnapshot.totalBytes) * taskSnapshot.bytesTransferred).toStringAsFixed(0);
+            notifyListeners();
+      }).onDone(() {
+        isUploading = false;
+        notifyListeners();
+        Utils.showToast("Téléversement Terminé");
+        // Navigator.of(context).pushNamed(RouteNames.tabs);
+      });
+    }
+  }
+
+  bool genderPageIsValid(BuildContext context) {
+    if(genderPreference.iam == genderPreference.iWannaMeet && genderPreference.iam != Gender.spartan) {
+      showDialog(context: context, builder: (_) => InfoAlert("Vous avez choisi une mauvaise préférence de genre", lottieAsset: FileAssets.lottieAstonished, title: "Erreur !".toUpperCase(),));
+      return false;
+    }
+    if(genderPreference.iam == Gender.spartan || genderPreference.iWannaMeet == Gender.spartan || genderPreference.relationType == ERelationType.spartan) {
+      return false;
+    } else {
+      return true;
+    }
   }
 }

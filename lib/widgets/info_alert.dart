@@ -5,8 +5,9 @@ import 'package:lottie/lottie.dart';
 class InfoAlert extends StatelessWidget {
   final String title;
   final String message;
+  final String lottieAsset;
   final String imageAsset;
-  const InfoAlert(this.message, this.imageAsset, {this.title="Imbécile", Key? key}) : super(key: key);
+  const InfoAlert(this.message, {this.lottieAsset="", this.imageAsset="", this.title="Info", Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -16,7 +17,7 @@ class InfoAlert extends StatelessWidget {
         height: MediaQuery.of(context).size.height*0.5,
         child: Column(
           children: [
-            Lottie.asset(imageAsset),
+            lottieAsset != "" ? Lottie.asset(lottieAsset) : Image.asset(imageAsset),
             Text(message, textAlign: TextAlign.center,)
           ],
         ),

@@ -92,7 +92,7 @@ class _GenderPageState extends State<GenderPage> {
                               {
                                     authProvider.selectPartnerGender(Gender.male);
                                     if(authProvider.genderPreference.iam == authProvider.genderPreference.iWannaMeet) {
-                                      showDialog(context: context, builder: (_) => InfoAlert("Nous n'aimons pas les pédés", FileAssets.lottieMad));
+                                      showDialog(context: context, builder: (_) => InfoAlert("Nous n'aimons pas les pédés", lottieAsset: FileAssets.lottieMad));
                                     }
                                   },
                               child: GradientTile(
@@ -110,7 +110,7 @@ class _GenderPageState extends State<GenderPage> {
                               onTap: () {
                                     authProvider.selectPartnerGender(Gender.female);
                                     if(authProvider.genderPreference.iam == authProvider.genderPreference.iWannaMeet) {
-                                      showDialog(context: context, builder: (_) => InfoAlert("Pas de lécheuse de chattes permis", FileAssets.lottieMad));
+                                      showDialog(context: context, builder: (_) => InfoAlert("Pas de lécheuse de chattes permis", lottieAsset: FileAssets.lottieMad));
                                     }
                                   },
                               child: GradientTile(
@@ -164,13 +164,7 @@ class _GenderPageState extends State<GenderPage> {
                         ),
                         const SizedBox(height: 30),
                         GestureDetector(
-                          onTap: () {
-                            if(authProvider.genderPreference.iam == authProvider.genderPreference.iWannaMeet && authProvider.genderPreference.iam != Gender.spartan) {
-                              showDialog(context: context, builder: (_) => InfoAlert("Tu n'as pas encore compris ? On ne permet pas de pédés ni lesbiennes ici en fait", FileAssets.lottieAstonished, title: "Voyou !".toUpperCase(),));
-                            } else {
-                              Navigator.of(context).pushNamed(RouteNames.preferences);
-                            }
-                          },
+                          onTap: () => authProvider.onGenderFormSaved(context),
                           child: const GradientTile(
                             tileAlignment: Alignment.centerRight,
                             tileText: 'Continuer',
