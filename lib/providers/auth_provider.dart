@@ -296,6 +296,7 @@ class AuthProvider extends ChangeNotifier {
           .putFile(File(imagePath))
           .snapshotEvents.listen((taskSnapshot) {
             uploadPercentage = ((100 / taskSnapshot.totalBytes) * taskSnapshot.bytesTransferred).toStringAsFixed(0);
+            print("${((100 / taskSnapshot.totalBytes) * taskSnapshot.bytesTransferred)} $uploadPercentage -- ${taskSnapshot.totalBytes} -- ${taskSnapshot.bytesTransferred}");
             notifyListeners();
       }).onDone(() {
         isUploading = false;
