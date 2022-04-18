@@ -13,9 +13,9 @@ import 'package:ajanchat/models/image_card_model.dart';
 import 'package:ajanchat/models/place_model.dart';
 import 'package:ajanchat/utils/utils.dart';
 import 'package:ajanchat/widgets/info_alert.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
@@ -59,8 +59,9 @@ class AuthProvider extends ChangeNotifier {
 
   GlobalKey<FormState> registerFormKey = GlobalKey<FormState>();
   GlobalKey<FormState> infosFormKey = GlobalKey<FormState>();
-  String uploadPercentage = "0";
+  double uploadPercentage = 0;
   bool isUploading = false;
+  List<String> uploadedDownloadUrls = [];
 
 
   void onRegisterFormSaved(BuildContext context) async {
@@ -288,22 +289,43 @@ class AuthProvider extends ChangeNotifier {
   signupUser(BuildContext context) async {
     isUploading = true;
     notifyListeners();
+    await uploadProfilePictures();
+    storeUserOnFirebase();
+    Navigator.of(context).pushNamed(RouteNames.tabs);
+  }
+
+  void storeUserOnFirebase() {
+    signupAjan.images = uploadedDownloadUrls;
+    FirebaseFirestore
+        .instance
+        .collection(Globals.FCN_ajan)
+        .doc(FirebaseAuth.instance.currentUser!.uid)
+        .set(signupAjan.toMap());
+  }
+
+  Future<void> uploadProfilePictures() async {
+    uploadedDownloadUrls = []; // erase data for multiple uploads (in dev mode)
     for (var imagePath in signupAjan.images) {
-      FirebaseStorage.instance
+      Stream<TaskSnapshot> taskStream = FirebaseStorage.instance
           .ref(Globals.FSN_profile_pictures)
           .child(FirebaseAuth.instance.currentUser!.uid)
           .child(imagePath.split("/").last)
           .putFile(File(imagePath))
-          .snapshotEvents.listen((taskSnapshot) {
-            uploadPercentage = ((100 / taskSnapshot.totalBytes) * taskSnapshot.bytesTransferred).toStringAsFixed(0);
-            print("${((100 / taskSnapshot.totalBytes) * taskSnapshot.bytesTransferred)} $uploadPercentage -- ${taskSnapshot.totalBytes} -- ${taskSnapshot.bytesTransferred}");
-            notifyListeners();
-      }).onDone(() {
-        isUploading = false;
+          .snapshotEvents;
+
+      await for (TaskSnapshot taskSnapshot in taskStream) {
+        print("$uploadPercentage -- ${taskSnapshot.bytesTransferred} -- ${taskSnapshot.totalBytes}");
+        uploadPercentage = (taskSnapshot.bytesTransferred*100)/taskSnapshot.totalBytes;
         notifyListeners();
-        Utils.showToast("Téléversement Terminé");
-        // Navigator.of(context).pushNamed(RouteNames.tabs);
-      });
+        if(uploadPercentage == 100) {
+          uploadedDownloadUrls.add(await taskSnapshot.ref.getDownloadURL());
+          break;
+        }
+      }
+
+      isUploading = false;
+      notifyListeners();
+      Utils.showToast("Téléversement Terminé");
     }
   }
 

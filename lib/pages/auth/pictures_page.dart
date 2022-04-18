@@ -85,7 +85,7 @@ class _PicturesPageState extends State<PicturesPage> {
                   builder: (context, authProvider, child) => authProvider.isUploading ? Column(
                     children: [
                       const Text("Téléversement des images"),
-                      Text("${authProvider.uploadPercentage.toString()} %")
+                      Text("${authProvider.uploadPercentage.ceil()} %")
                     ],
                   ) : Container()
                 )

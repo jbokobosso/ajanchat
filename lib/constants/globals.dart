@@ -4,4 +4,5 @@ class Globals {
   static const int maximumAgeInDays = 29200;
   static const int minimumAgeInDays = 6570;
   static const FSN_profile_pictures = "pictures/profile/";
+  static const FCN_ajan = "ajan_profile";
 }

@@ -1,5 +1,6 @@
 
 import 'package:ajanchat/models/ERelationType.dart';
+import 'package:enum_to_string/enum_to_string.dart';
 
 class RelationPreferences {
   Gender iam;
@@ -11,6 +12,14 @@ class RelationPreferences {
     required this.iWannaMeet,
     required this.relationType
   });
+
+  Map<String, dynamic> toMap() {
+    return {
+      "iam": EnumToString.convertToString(iam),
+      "iWannaMeet": EnumToString.convertToString(iWannaMeet),
+      "relationType": EnumToString.convertToString(relationType)
+    };
+  }
 }
 
 enum Gender {

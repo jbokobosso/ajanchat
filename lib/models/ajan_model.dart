@@ -23,4 +23,17 @@ class AjanModel {
     this.location,
     this.isActive = true
   });
+
+  Map<String, dynamic> toMap() {
+    return {
+      "phoneNumber": phoneNumber,
+      "createdAt": createdAt,
+      "displayName": displayName,
+      "birthDate": birthDate,
+      "preferences": preferences,
+      "relationPreferences": relationPreferences!.toMap(),
+      "images": images,
+      "location": location!.toMap(),
+    };
+  }
 }
