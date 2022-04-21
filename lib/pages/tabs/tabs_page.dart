@@ -44,10 +44,10 @@ class _TabsPageState extends State<TabsPage> {
       appBar: AppBar(
         elevation: 0,
         backgroundColor: Colors.transparent,
-        leading: IconButton(
-          icon: SvgPicture.asset(FileAssets.backArrowIcon),
-          onPressed: () => Navigator.of(context).pop(),
-        ),
+        // leading: IconButton(
+        //   icon: SvgPicture.asset(FileAssets.backArrowIcon),
+        //   onPressed: () => Navigator.of(context).pop(),
+        // ),
       ),
       body: Consumer<AuthProvider>(builder: (context, authProvider, child) => navigationTabs[authProvider.currentTabIndex]),
       floatingActionButton: FloatingActionButton(

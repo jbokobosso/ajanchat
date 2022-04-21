@@ -291,7 +291,19 @@ class AuthProvider extends ChangeNotifier {
     notifyListeners();
     await uploadProfilePictures();
     storeUserOnFirebase();
+    await markUserLogged();
     Navigator.of(context).pushNamed(RouteNames.tabs);
+  }
+
+  Future<bool> checkUserIsLogged() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.getBool(Globals.S_isLogged) ?? false;
+  }
+
+  Future<bool> markUserLogged() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    bool result = await prefs.setBool(Globals.S_isLogged, true);
+    return result;
   }
 
   void storeUserOnFirebase() {
