@@ -1,7 +1,9 @@
 import 'package:ajanchat/constants/file_assets.dart';
+import 'package:ajanchat/constants/globals.dart';
 import 'package:ajanchat/models/ERelationType.dart';
 import 'package:ajanchat/models/RelationPreferences.dart';
 import 'package:ajanchat/models/ajan_model.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 
@@ -14,16 +16,28 @@ class HomeProvider extends ChangeNotifier {
     AjanModel(displayName: "Constantine SIOU", birthDate: DateTime.parse("1998-03-25 20:15:04Z"), preferences: ["Comptable, Rigueur, Love Story"], relationPreferences: RelationPreferences(iam: Gender.male, iWannaMeet: Gender.female, relationType: ERelationType.serious), images: [FileAssets.ajan1, FileAssets.ajan2]),
   ];
 
+  getAjanList() async {
+    List<AjanModel> ajanListTemp =[];
+    QuerySnapshot<Map<String, dynamic>> data = await FirebaseFirestore.instance.collection(Globals.FCN_ajan).get();
+    data.docs.forEach((element) {
+      ajanListTemp.add(
+          AjanModel.fromMap(element.data())
+      );
+    });
+    print(ajanListTemp);
+  }
+
   List<AjanModel> likedAjanList = [];
 
   likeAjan() {
     ajanList.last.likingsAjans.add(FirebaseAuth.instance.currentUser!.uid);
     AjanModel likedAjan = ajanList.removeLast();
     likedAjanList.add(likedAjan);
-    if(likedAjanList.length == 10) updateLikedAjanOnFirebase(likedAjanList);
+    if(likedAjanList.length == 3) updateLikedAjanOnFirebase(likedAjanList);
   }
 
   updateLikedAjanOnFirebase(List<AjanModel> likedAjanList) {
     //TODO:: Implement method
+    // FirebaseFirestore.instance.collection(Globals.FCN_ajan).
   }
 }

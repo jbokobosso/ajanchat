@@ -17,6 +17,12 @@ class _HomeTabState extends State<HomeTab> {
   bool isBusy = false;
 
   @override
+  void initState() {
+    Provider.of<HomeProvider>(context, listen: false).getAjanList();
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Container(
         width: double.infinity,

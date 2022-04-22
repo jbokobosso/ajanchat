@@ -1,5 +1,7 @@
 import 'package:ajanchat/models/RelationPreferences.dart';
 import 'package:ajanchat/models/place_model.dart';
+import 'package:ajanchat/utils/utils.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class AjanModel {
   String? phoneNumber;
@@ -36,5 +38,18 @@ class AjanModel {
       "images": images,
       "location": location!.toMap(),
     };
+  }
+
+  static AjanModel fromMap(Map<String, dynamic> jsonData) {
+    return AjanModel(
+      phoneNumber: jsonData['phoneNumber'],
+      createdAt: DateTime.parse(jsonData['createdAt']),
+      displayName: jsonData['displayName'],
+      birthDate: DateTime.fromMillisecondsSinceEpoch(jsonData['birthDate']),
+      preferences: jsonData['preferences'],
+      relationPreferences: RelationPreferences.fromMap(jsonData['relationPreferences']),
+      images: jsonData['images'],
+      location: jsonData['location']
+    );
   }
 }
