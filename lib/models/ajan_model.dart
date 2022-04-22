@@ -11,6 +11,7 @@ class AjanModel {
   late List<String> images;
   PlaceModel? location;
   bool isActive;
+  List<String> likingsAjans = [];
 
   AjanModel({
     this.phoneNumber,

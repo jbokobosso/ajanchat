@@ -2,10 +2,13 @@ import 'dart:ui';
 
 import 'package:ajanchat/constants/file_assets.dart';
 import 'package:ajanchat/models/ajan_model.dart';
+import 'package:ajanchat/providers/home_provider.dart';
 import 'package:ajanchat/utils/utils.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_swipable/flutter_swipable.dart';
+import 'package:provider/provider.dart';
 
 class AjanTile extends StatefulWidget {
   AjanModel ajan;
@@ -26,6 +29,11 @@ class _AjanTileState extends State<AjanTile> {
       width: MediaQuery.of(context).size.width*0.7,
       height: MediaQuery.of(context).size.height*0.6,
       child: Swipable(
+        onSwipeRight: (Offset offset) {
+          Provider.of<HomeProvider>(context, listen: false).likeAjan();
+          print(Provider.of<HomeProvider>(context, listen: false).ajanList.length);
+          print(Provider.of<HomeProvider>(context, listen: false).likedAjanList.length);
+        },
         child: Stack(
           alignment: Alignment.bottomCenter,
           children: [
