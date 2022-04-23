@@ -39,20 +39,22 @@ class AjanModel {
       "relationPreferences": relationPreferences!.toMap(),
       "images": images,
       "location": location!.toMap(),
+      "isActive": isActive
     };
   }
 
-  static AjanModel fromMap(Map<String, dynamic> jsonData, String firebaseId) {
+  static AjanModel fromMap(Map<String, dynamic> firebaseData, String firebaseId) {
     return AjanModel(
       id: firebaseId,
-      phoneNumber: jsonData['phoneNumber'],
-      createdAt: Utils.timestampToDateTime(jsonData['createdAt']),
-      displayName: jsonData['displayName'],
-      birthDate: Utils.timestampToDateTime(jsonData['birthDate']),
-      preferences: jsonData['preferences'],
-      relationPreferences: RelationPreferences.fromMap(jsonData['relationPreferences']),
-      images: jsonData['images'],
-      location: PlaceModel.fromMap(jsonData['location'])
+      phoneNumber: firebaseData['phoneNumber'],
+      createdAt: Utils.timestampToDateTime(firebaseData['createdAt']),
+      displayName: firebaseData['displayName'],
+      birthDate: Utils.timestampToDateTime(firebaseData['birthDate']),
+      preferences: firebaseData['preferences'],
+      relationPreferences: RelationPreferences.fromMap(firebaseData['relationPreferences']),
+      images: firebaseData['images'],
+      location: PlaceModel.fromMap(firebaseData['location']),
+      isActive: firebaseData['isActive']
     );
   }
 }

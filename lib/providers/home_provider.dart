@@ -7,29 +7,66 @@ import 'package:ajanchat/utils/utils.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class HomeProvider extends ChangeNotifier {
-  List<AjanModel> ajanList = [
-    // AjanModel(displayName: "Josué BOKOBOSSO", birthDate: DateTime.parse("1997-03-25 20:15:04Z"), preferences: ["Moto, Cinéma, Cuisine, Voyages, Bouffe"], relationPreferences: RelationPreferences(iam: Gender.male, iWannaMeet: Gender.female, relationType: ERelationType.serious), images: [FileAssets.ajan4, FileAssets.ajan2]),
-    // AjanModel(displayName: "Aristide KARBOU", birthDate: DateTime.parse("2000-03-25 20:15:04Z"), preferences: ["Tiktok, Social, Motos"], relationPreferences: RelationPreferences(iam: Gender.male, iWannaMeet: Gender.female, relationType: ERelationType.serious), images: [FileAssets.ajan5, FileAssets.ajan2]),
-    // AjanModel(displayName: "Gloria BAGED", birthDate: DateTime.parse("2002-03-25 20:15:04Z"), preferences: ["Fiesta, Cuisine, Bouffe"], relationPreferences: RelationPreferences(iam: Gender.male, iWannaMeet: Gender.female, relationType: ERelationType.serious), images: [FileAssets.ajan2, FileAssets.ajan3]),
-    // AjanModel(displayName: "Hervé KAO", birthDate: DateTime.parse("1999-03-25 20:15:04Z"), preferences: ["Kabyè, Badass, Lecture"], relationPreferences: RelationPreferences(iam: Gender.male, iWannaMeet: Gender.female, relationType: ERelationType.serious), images: [FileAssets.ajan3, FileAssets.ajan2]),
-    // AjanModel(displayName: "Constantine SIOU", birthDate: DateTime.parse("1998-03-25 20:15:04Z"), preferences: ["Comptable, Rigueur, Love Story"], relationPreferences: RelationPreferences(iam: Gender.male, iWannaMeet: Gender.female, relationType: ERelationType.serious), images: [FileAssets.ajan1, FileAssets.ajan2]),
-  ];
+  List<AjanModel> ajanList = [];
+  List<AjanModel> likedAjanList = [];
+  late DocumentSnapshot lastReadAjan;
+  bool isBusy = true;
 
   getAjanList() async {
-    List<AjanModel> ajanListTemp =[];
-    QuerySnapshot<Map<String, dynamic>> data = await FirebaseFirestore.instance.collection(Globals.FCN_ajan).get();
-    data.docs.forEach((QueryDocumentSnapshot<Map<String, dynamic>> queryDocumentSnapshot) {
-      ajanListTemp.add(
-          AjanModel.fromMap(queryDocumentSnapshot.data(), queryDocumentSnapshot.id)
-      );
-    });
-    ajanList = ajanListTemp;
-    notifyListeners();
+    isBusy = true;
+    try {
+      List<AjanModel> ajanListTemp =[];
+      QuerySnapshot<Map<String, dynamic>> data = await FirebaseFirestore.instance
+          .collection(Globals.FCN_ajan)
+          .where("isActive", isEqualTo: true)
+          .orderBy("createdAt")
+          .limit(Globals.maximumAjanLimit)
+          .get();
+      data.docs.forEach((QueryDocumentSnapshot<Map<String, dynamic>> queryDocumentSnapshot) {
+        ajanListTemp.add(
+            AjanModel.fromMap(queryDocumentSnapshot.data(), queryDocumentSnapshot.id)
+        );
+      });
+      ajanList = ajanListTemp;
+      lastReadAjan = data.docs.last;
+      notifyListeners();
+    } catch(exception) {
+      rethrow;
+    } finally {
+      isBusy = false;
+      notifyListeners();
+    }
   }
 
-  List<AjanModel> likedAjanList = [];
+  getAdditionalAjanList() async {
+    isBusy = true;
+    notifyListeners();
+    try {
+      List<AjanModel> ajanListTemp =[];
+      QuerySnapshot<Map<String, dynamic>> data = await FirebaseFirestore.instance
+          .collection(Globals.FCN_ajan)
+          .where("isActive", isEqualTo: true)
+          .orderBy("createdAt")
+          .startAfter([lastReadAjan.data()])
+          .limit(Globals.maximumAjanLimit)
+          .get();
+      data.docs.forEach((QueryDocumentSnapshot<Map<String, dynamic>> queryDocumentSnapshot) {
+        ajanListTemp.add(
+            AjanModel.fromMap(queryDocumentSnapshot.data(), queryDocumentSnapshot.id)
+        );
+      });
+      ajanList = ajanListTemp;
+      notifyListeners();
+    } catch(exception) {
+      rethrow;
+    } finally {
+      isBusy = false;
+      notifyListeners();
+    }
+  }
 
   likeAjan() {
     ajanList.last.likingsAjans.add(FirebaseAuth.instance.currentUser!.uid);
@@ -40,6 +77,12 @@ class HomeProvider extends ChangeNotifier {
     } else {
       if(likedAjanList.length == Globals.maximumAjanLimit) updateLikedAjanOnFirebase(likedAjanList);
     }
+
+    checkIfAjanListIsEmpty();
+  }
+
+  checkIfAjanListIsEmpty() {
+    if(ajanList.isEmpty) getAdditionalAjanList();
   }
 
   updateLikedAjanOnFirebase(List<AjanModel> likedAjanList) {

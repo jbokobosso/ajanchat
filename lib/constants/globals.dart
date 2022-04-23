@@ -7,4 +7,5 @@ class Globals {
   static const FSN_profile_pictures = "pictures/profile/";
   static const FCN_ajan = "ajan_profile";
   static const S_isLogged = "isLogged";
+  static const S_lastReadAjan = "last_read_ajan";
 }
