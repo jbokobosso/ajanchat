@@ -20,6 +20,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl_phone_number_input/intl_phone_number_input.dart';
+import 'package:location/location.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AuthProvider extends ChangeNotifier {
@@ -62,6 +63,7 @@ class AuthProvider extends ChangeNotifier {
   double uploadPercentage = 0;
   bool isUploading = false;
   List<String> uploadedDownloadUrls = [];
+  bool isLocating = false;
 
 
   void onRegisterFormSaved(BuildContext context) async {
@@ -251,7 +253,35 @@ class AuthProvider extends ChangeNotifier {
     }
   }
 
-  void onLocationTapped() {
+  Future<void> onLocationTapped() async {
+    Location location = Location();
+
+    bool _serviceEnabled;
+    PermissionStatus _permissionGranted;
+    LocationData _locationData;
+
+    _serviceEnabled = await location.serviceEnabled();
+    if (!_serviceEnabled) {
+      _serviceEnabled = await location.requestService();
+      if (!_serviceEnabled) {
+        return;
+      }
+    }
+
+    _permissionGranted = await location.hasPermission();
+    if (_permissionGranted == PermissionStatus.denied) {
+      _permissionGranted = await location.requestPermission();
+      if (_permissionGranted != PermissionStatus.granted) {
+        return;
+      }
+    }
+    isLocating = true;
+    notifyListeners();
+    _locationData = await location.getLocation();
+    isLocating = false;
+    notifyListeners();
+    locationValue.latitude = _locationData.latitude!;
+    locationValue.longitude = _locationData.longitude!;
     locationController.text = "${locationValue.latitude}, ${locationValue.longitude}";
     notifyListeners();
   }

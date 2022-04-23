@@ -54,8 +54,8 @@ class _PicturesPageState extends State<PicturesPage> {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 Text('Dernière étape', style: Theme.of(context).textTheme.headline6),
-                SizedBox(height: 20.0),
-                Text('Ajoutes au moins trois (03) photos'),
+                const SizedBox(height: 20.0),
+                const Text('Ajoutes au moins trois (03) photos'),
                 SizedBox(
                   height: deviceHeight * 0.6,
                   child: Padding(

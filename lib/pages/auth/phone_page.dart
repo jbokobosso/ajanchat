@@ -67,8 +67,7 @@ class _PhonePageState extends State<PhonePage> {
                             formatInput: true,
                             keyboardType: TextInputType.phone,
                             inputBorder: const OutlineInputBorder(),
-                            countries: const ['TG', 'BF', 'BJ', 'GH'],
-
+                            countries: const ['TG']
                           )
                         ],
                       )

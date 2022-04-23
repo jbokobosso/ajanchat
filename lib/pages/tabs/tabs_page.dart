@@ -50,11 +50,11 @@ class _TabsPageState extends State<TabsPage> {
         // ),
       ),
       body: Consumer<AuthProvider>(builder: (context, authProvider, child) => navigationTabs[authProvider.currentTabIndex]),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () => null,
-        backgroundColor: const Color(0xff51C3FE),
-        child: Image.asset(FileAssets.thunderIcon, color: Colors.white, width: 15),
-      ),
+      // floatingActionButton: FloatingActionButton(
+      //   onPressed: () => null,
+      //   backgroundColor: const Color(0xff51C3FE),
+      //   child: Image.asset(FileAssets.thunderIcon, color: Colors.white, width: 15),
+      // ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       bottomNavigationBar: Consumer<AuthProvider>(
         builder: (context, authProvider, child) => AnimatedBottomNavigationBar(

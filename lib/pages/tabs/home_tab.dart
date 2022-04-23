@@ -1,4 +1,5 @@
 import 'package:ajanchat/constants/file_assets.dart';
+import 'package:ajanchat/models/ajan_model.dart';
 import 'package:ajanchat/providers/home_provider.dart';
 import 'package:ajanchat/utils/utils.dart';
 import 'package:ajanchat/widgets/loading.dart';
@@ -29,64 +30,61 @@ class _HomeTabState extends State<HomeTab> {
         height: double.infinity,
         decoration: BoxDecoration(image: DecorationImage(image: AssetImage(FileAssets.bg2), fit: BoxFit.cover)),
         child: Stack(
-          alignment: Alignment.center,
           children: [
-            Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 45),
-                    child: ListTile(
-                      leading: GestureDetector(
-                        child: Container(
-                          width: 30.0,
-                          decoration: const BoxDecoration(
-                              shape: BoxShape.circle,
-                              color: Color(0xff51C3FE)
-                          ),
-                          child: Padding(
-                            padding: const EdgeInsets.all(5.0),
-                            child: Image.asset(FileAssets.crownIcon, color: Colors.white),
-                          ),
+            Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 45),
+                  child: ListTile(
+                    leading: GestureDetector(
+                      child: Container(
+                        width: 30.0,
+                        decoration: const BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: Color(0xff51C3FE)
+                        ),
+                        child: Padding(
+                          padding: const EdgeInsets.all(5.0),
+                          child: Image.asset(FileAssets.crownIcon, color: Colors.white),
                         ),
                       ),
-                      title: const Text("Passer à Premium", style: TextStyle(color: Color(0xff35667E)),),
-                      subtitle: const Text("Ton crush s'impatiente !", style: TextStyle(color: Color(0xff93B6C6)),),
-                      trailing: GestureDetector(
-                        child: Container(
-                          width: 15.0,
-                          decoration: const BoxDecoration(
-                              shape: BoxShape.circle,
-                              color: Color(0xff51C3FE)
-                          ),
-                          child: Padding(
-                            padding: const EdgeInsets.all(5.0),
-                            child: Image.asset(FileAssets.crossIcon, color: Colors.white),
-                          ),
-                        ),
-                      ),
-                      onTap: () => Utils.showToast("En construction..."),
                     ),
-                  ),
-                  Stack(
-                    children: Provider.of<HomeProvider>(context).ajanList.map((e) => AjanTile(ajan: e)).toList(),
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      IconButton(
-                        onPressed: () => null,
-                        icon: Image.asset(FileAssets.crossIcon, color: const Color(0xffFFCB58), width: 17),
+                    title: const Text("Passer à Premium", style: TextStyle(color: Color(0xff35667E)),),
+                    subtitle: const Text("Ton crush s'impatiente !", style: TextStyle(color: Color(0xff93B6C6)),),
+                    trailing: GestureDetector(
+                      child: Container(
+                        width: 15.0,
+                        decoration: const BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: Color(0xff51C3FE)
+                        ),
+                        child: Padding(
+                          padding: const EdgeInsets.all(5.0),
+                          child: Image.asset(FileAssets.crossIcon, color: Colors.white),
+                        ),
                       ),
-                      IconButton(
-                        icon: const Icon(Icons.favorite, color: Color(0xffFC77A0)),
-                        onPressed: () => null,
-                      )
-                    ],
-                  )
-                ],
-              ),
+                    ),
+                    onTap: () => Utils.showToast("En construction..."),
+                  ),
+                ),
+                Column(
+                  children: Provider.of<HomeProvider>(context).ajanList.map((e) => AjanTile(ajan: e)).toList(),
+                ),
+                // Row(
+                //   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                //   children: [
+                //     IconButton(
+                //       onPressed: () => null,
+                //       icon: Image.asset(FileAssets.crossIcon, color: const Color(0xffFFCB58), width: 17),
+                //     ),
+                //     IconButton(
+                //       icon: const Icon(Icons.favorite, color: Color(0xffFC77A0)),
+                //       onPressed: () => null,
+                //     )
+                //   ],
+                // )
+              ],
             ),
             isBusy ? const Loading() : Container()
           ],

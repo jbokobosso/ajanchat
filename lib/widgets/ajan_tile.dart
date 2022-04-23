@@ -31,8 +31,6 @@ class _AjanTileState extends State<AjanTile> {
       child: Swipable(
         onSwipeRight: (Offset offset) {
           Provider.of<HomeProvider>(context, listen: false).likeAjan();
-          print(Provider.of<HomeProvider>(context, listen: false).ajanList.length);
-          print(Provider.of<HomeProvider>(context, listen: false).likedAjanList.length);
         },
         child: Stack(
           alignment: Alignment.bottomCenter,
@@ -41,12 +39,11 @@ class _AjanTileState extends State<AjanTile> {
               borderRadius: BorderRadius.circular(25),
               child: ListView(
                 padding: EdgeInsets.zero,
-                children: widget.ajan.images.map((image) => Image.asset(image, fit: BoxFit.cover,)).toList(),
+                children: widget.ajan.images.map((image) => Image.network(image, fit: BoxFit.cover)).toList(),
               ),
             ),
             SizedBox(
               height: MediaQuery.of(context).size.height*0.11,
-              width: double.infinity,
               child: ClipRect(
                 child: BackdropFilter(
                   filter: ImageFilter.blur(

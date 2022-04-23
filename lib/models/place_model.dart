@@ -12,4 +12,12 @@ class PlaceModel {
       "placeId": placeId
     };
   }
+
+  static PlaceModel fromMap(Map<String, dynamic> firebaseData) {
+    return PlaceModel(
+      firebaseData['latitude'],
+      firebaseData['longitude'],
+      placeId: firebaseData['placeId'] ?? ""
+    );
+  }
 }

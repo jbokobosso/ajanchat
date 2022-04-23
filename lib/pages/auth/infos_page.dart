@@ -93,9 +93,9 @@ class _InfosPageState extends State<InfosPage> {
                               GestureDetector(
                                 onTap: () => showDatePicker(
                                     context: context,
-                                    initialDate: DateTime.now(),
+                                    initialDate: DateTime.now().subtract(const Duration(days: Globals.minimumAgeInDays)),
                                     firstDate: DateTime.now().subtract(const Duration(days: Globals.minimumAgeInDays)),
-                                    lastDate: DateTime.now().add(const Duration(days: Globals.maximumAgeInDays))
+                                    lastDate: DateTime.now().subtract(const Duration(days: Globals.maximumAgeInDays))
                                 ).then((DateTime? pickedDate) {
                                   authProvider.birthdateController.text = "${pickedDate!.day}-${pickedDate.month}-${pickedDate.year}";
                                   authProvider.birthdateValue = pickedDate;
@@ -103,18 +103,18 @@ class _InfosPageState extends State<InfosPage> {
                                 child: TextFormField(
                                   enabled: false,
                                   decoration: InputDecoration(
-                                      icon: SvgPicture.asset('assets/icons/calendar.svg'),
-                                      labelText: 'Date de naissance',
-                                      border: const  OutlineInputBorder(
-                                          borderSide: BorderSide(
-                                              color: Colors.deepPurple,
-                                              width: 5.0,
-                                              style: BorderStyle.solid
-                                          )
-                                      )
+                                    icon: SvgPicture.asset('assets/icons/calendar.svg'),
+                                    labelText: 'Date de naissance',
+                                    border: const  OutlineInputBorder(
+                                        borderSide: BorderSide(
+                                            color: Colors.deepPurple,
+                                            width: 5.0,
+                                            style: BorderStyle.solid
+                                        )
+                                    )
                                   ),
                                   validator: validator,
-                                  controller: authProvider.birthdateController,
+                                  controller: authProvider.birthdateController
                                 ),
                               ),
                               SizedBox(height: deviceHeight*textInputSpacingScale),
@@ -131,7 +131,8 @@ class _InfosPageState extends State<InfosPage> {
                                               width: 5.0,
                                               style: BorderStyle.solid
                                           )
-                                      )
+                                      ),
+                                      suffixIcon: authProvider.isLocating ? const CircularProgressIndicator() : Container(height: 0, width: 0,)
                                   ),
                                   validator: validator,
                                   controller: authProvider.locationController,
@@ -145,13 +146,13 @@ class _InfosPageState extends State<InfosPage> {
                   ),
                 ),
                 SizedBox(height: MediaQuery.of(context).size.height*textInputSpacingScale),
-                GestureDetector(
+                !authProvider.isLocating ? GestureDetector(
                   onTap: () => authProvider.onInfosFormSaved(context),
                   child: const GradientTile(
                     tileAlignment: Alignment.centerRight,
                     tileText: 'Continuer',
                   ),
-                )
+                ) : Container(height: 0, width: 0)
               ],
             ),
           ),

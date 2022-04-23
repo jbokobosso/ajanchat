@@ -31,6 +31,7 @@ dependencies:
   # Core Functionalities
   geolocator: ^8.0.1
   enum_to_string: ^2.0.1
+  location: ^4.3.0
 
   # Data Storage
   shared_preferences: ^2.0.11
