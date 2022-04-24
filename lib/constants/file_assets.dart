@@ -21,6 +21,7 @@ class FileAssets {
   static String lottieHeartLoading = 'assets/lottie/heart-loading.json';
   static String lottieMad = 'assets/lottie/mad.json';
   static String lottieAstonished = 'assets/lottie/astonished.json';
+  static String lottieUploading = "assets/lottie/uploading.json";
   static String onlineIcon = "assets/icons/online.svg";
   static String cameraIcon = "assets/icons/camera.svg";
   static String voiceIcon = "assets/icons/voice.svg";

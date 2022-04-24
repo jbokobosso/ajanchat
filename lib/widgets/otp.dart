@@ -125,7 +125,7 @@ class _OtpState extends State<Otp> {
                           obscuringCharacter: '*',
                           obscuringWidget: Icon(Icons.favorite, color: Theme.of(context).primaryColor,),
                           blinkWhenObscuring: true,
-                          animationType: AnimationType.fade,
+                          animationType: AnimationType.scale,
                           validator: (v) {
                             if (v!.length < 3) {
                               return "Veuillez tout remplir";

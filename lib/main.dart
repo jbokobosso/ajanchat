@@ -32,7 +32,7 @@ class MyApp extends StatelessWidget {
       title: Globals.appName,
       theme: ThemeData(
         primaryColor: const Color(0xffDF25AB),
-        accentColor: const Color(0xff514EFF),
+        accentColor: const Color(0xff19516F),
         primarySwatch: Colors.pink
       ),
       routes: routes,

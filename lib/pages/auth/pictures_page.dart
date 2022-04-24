@@ -7,6 +7,7 @@ import 'package:ajanchat/providers/auth_provider.dart';
 import 'package:ajanchat/widgets/gradient_tile.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:lottie/lottie.dart';
 import 'package:provider/provider.dart';
 
 class PicturesPage extends StatefulWidget {
@@ -75,19 +76,28 @@ class _PicturesPageState extends State<PicturesPage> {
                     ),
                   ),
                 ),
-                GestureDetector(
-                  onTap: () => Provider.of<AuthProvider>(context, listen: false).onPicturesFormSaved(context),
-                  child: const GradientTile(
-                      tileText: "S'inscrire",
-                      tileAlignment: Alignment.centerRight),
-                ),
                 Consumer<AuthProvider>(
-                  builder: (context, authProvider, child) => authProvider.isUploading ? Column(
+                  builder: (context, authProvider, child) => Column(
                     children: [
-                      const Text("Téléversement des images"),
-                      Text("${authProvider.uploadPercentage.ceil()} %")
+                      authProvider.isUploading || authProvider.isBusy
+                          ? LottieBuilder.asset(FileAssets.lottieUploading, width: MediaQuery.of(context).size.width*0.3)
+                          : GestureDetector(
+                              onTap: () => Provider.of<AuthProvider>(context, listen: false).onPicturesFormSaved(context),
+                              child: const GradientTile(
+                                  tileText: "S'inscrire",
+                                  tileAlignment: Alignment.centerRight),
+                            ),
+                      authProvider.isUploading
+                          ? Column(
+                        children: [
+                          const Text("Téléversement des images"),
+                          Text("Image N° ${authProvider.currentUploadingImageCount}", style: TextStyle(color: Theme.of(context).primaryColor),),
+                          Text("${authProvider.uploadPercentage.ceil()} %")
+                        ],
+                      )
+                          : Container()
                     ],
-                  ) : Container()
+                  )
                 )
               ],
             )));

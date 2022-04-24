@@ -25,12 +25,19 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class AuthProvider extends ChangeNotifier {
 
+  AjanModel defaultUser = AjanModel(
+      phoneNumber: "",
+      preferences: [],
+      images: [],
+      birthDate: DateTime.fromMicrosecondsSinceEpoch(1000),
+      relationPreferences: RelationPreferences(iam: Gender.spartan, iWannaMeet: Gender.spartan, relationType: ERelationType.spartan), dislikedAjanList: [], likedAjanList: []
+  );
   AjanModel signupAjan = AjanModel(
-    phoneNumber: "",
-    preferences: [],
-    images: [],
-    birthDate: DateTime.fromMicrosecondsSinceEpoch(1000),
-    relationPreferences: RelationPreferences(iam: Gender.spartan, iWannaMeet: Gender.spartan, relationType: ERelationType.spartan), dislikedAjanList: [], likedAjanList: []
+      phoneNumber: "",
+      preferences: [],
+      images: [],
+      birthDate: DateTime.fromMicrosecondsSinceEpoch(1000),
+      relationPreferences: RelationPreferences(iam: Gender.spartan, iWannaMeet: Gender.spartan, relationType: ERelationType.spartan), dislikedAjanList: [], likedAjanList: []
   );
   AjanModel loggedUser = AjanModel(
     phoneNumber: "",
@@ -71,6 +78,8 @@ class AuthProvider extends ChangeNotifier {
   bool isUploading = false;
   List<String> uploadedDownloadUrls = [];
   bool isLocating = false;
+  bool isLoggingOut = false;
+  int currentUploadingImageCount = 1;
 
 
   void onRegisterFormSaved(BuildContext context) async {
@@ -324,19 +333,65 @@ class AuthProvider extends ChangeNotifier {
   }
 
   signupUser(BuildContext context) async {
-    isUploading = true;
+    isBusy = true;
     notifyListeners();
-    await uploadProfilePictures();
-    storeUserOnFirebase();
-    await markUserLogged();
-    Navigator.of(context).pushNamed(RouteNames.tabs);
+    try {
+      notifyListeners();
+      await uploadProfilePictures();
+      storeUserOnFirebase();
+      await markUserLogged();
+      Navigator.of(context).pushNamed(RouteNames.tabs);
+    } catch(exception) {
+      rethrow;
+    } finally {
+      isBusy = false;
+      notifyListeners();
+    }
+  }
+
+  logout(BuildContext buildContext) {
+    isLoggingOut = true;
+    notifyListeners();
+    try {
+      FirebaseFirestore.instance
+          .collection(Globals.FCN_ajan)
+          .doc(FirebaseAuth.instance.currentUser!.uid)
+          .delete()
+          .then((value) async {
+        FirebaseAuth.instance.signOut();
+        loggedUser = defaultUser;
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        prefs.setBool(Globals.S_isLogged, false);
+        Navigator.of(buildContext).pushNamedAndRemoveUntil(RouteNames.auth, (route) => false);
+        Utils.showToast("Déconnecté !");
+      });
+    } catch(exception) {
+      rethrow;
+    } finally {
+      isLoggingOut = false;
+      notifyListeners();
+    }
   }
 
   Future<void> loadLoggedUserFromFirebase() async {
     FirebaseFirestore.instance.collection(Globals.FCN_ajan)
         .doc(FirebaseAuth.instance.currentUser!.uid)
         .get()
-        .then((value) => loggedUser = AjanModel.fromMap(value.data()!, value.id));
+        .then((value) {
+      loggedUser = AjanModel.fromMap(value.data()!, value.id);
+      Utils.showToast("Utilisateur chargé");
+    });
+  }
+
+  Future<void> loadLoggedUserFromFirebaseAndNotify() async {
+    FirebaseFirestore.instance.collection(Globals.FCN_ajan)
+        .doc(FirebaseAuth.instance.currentUser!.uid)
+        .get()
+        .then((value) {
+      loggedUser = AjanModel.fromMap(value.data()!, value.id);
+      Utils.showToast("Utilisateur chargé");
+      notifyListeners();
+    });
   }
 
   Future<bool> checkUserIsLogged() async {
@@ -365,8 +420,10 @@ class AuthProvider extends ChangeNotifier {
   }
 
   Future<void> uploadProfilePictures() async {
+    currentUploadingImageCount = 1; // initialize in case it's called multiple times
     uploadedDownloadUrls = []; // erase data for multiple uploads (in dev mode)
     for (var imagePath in signupAjan.images) {
+      isUploading = true;
       Stream<TaskSnapshot> taskStream = FirebaseStorage.instance
           .ref(Globals.FSN_profile_pictures)
           .child(FirebaseAuth.instance.currentUser!.uid)
@@ -386,7 +443,8 @@ class AuthProvider extends ChangeNotifier {
 
       isUploading = false;
       notifyListeners();
-      Utils.showToast("Téléversement Terminé");
+      Utils.showToast("Image ${currentUploadingImageCount} téléversée !");
+      currentUploadingImageCount++;
     }
   }
 
