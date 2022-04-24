@@ -3,10 +3,13 @@ import 'package:ajanchat/constants/globals.dart';
 import 'package:ajanchat/models/ERelationType.dart';
 import 'package:ajanchat/models/RelationPreferences.dart';
 import 'package:ajanchat/models/ajan_model.dart';
+import 'package:ajanchat/providers/auth_provider.dart';
 import 'package:ajanchat/utils/utils.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class HomeProvider extends ChangeNotifier {
@@ -15,15 +18,19 @@ class HomeProvider extends ChangeNotifier {
   List<AjanModel> dislikedAjanList = [];
   late DocumentSnapshot lastReadAjan;
   bool isBusy = true;
+  AuthProvider _authProvider = AuthProvider();
 
   getAjanList() async {
+    if(ajanList.isNotEmpty) return;
     isBusy = true;
     try {
       List<AjanModel> ajanListTemp =[];
       QuerySnapshot<Map<String, dynamic>> data = await FirebaseFirestore.instance
           .collection(Globals.FCN_ajan)
-          .where("isActive", isEqualTo: true)
+          .where("id", isNotEqualTo: FirebaseAuth.instance.currentUser!.uid)
+          .orderBy("id")
           .orderBy("createdAt")
+          .where("isActive", isEqualTo: true)
           .limit(Globals.maximumAjanLimit)
           .get();
       data.docs.forEach((QueryDocumentSnapshot<Map<String, dynamic>> queryDocumentSnapshot) {
@@ -32,13 +39,12 @@ class HomeProvider extends ChangeNotifier {
         );
       });
       ajanList = ajanListTemp;
-      lastReadAjan = data.docs.last;
-      notifyListeners();
+      if(data.docs.isNotEmpty) lastReadAjan = data.docs.last;
     } catch(exception) {
       rethrow;
     } finally {
       isBusy = false;
-      notifyListeners();
+      if(ajanList.isEmpty) Utils.showToast("Base de donnée vide!");
     }
   }
 
@@ -49,8 +55,11 @@ class HomeProvider extends ChangeNotifier {
       List<AjanModel> ajanListTemp =[];
       QuerySnapshot<Map<String, dynamic>> data = await FirebaseFirestore.instance
           .collection(Globals.FCN_ajan)
-          .where("isActive", isEqualTo: true)
+          .where("id", whereNotIn: _authProvider.loggedUser.likedAjanList)
+          .where("id", whereNotIn: _authProvider.loggedUser.dislikedAjanList)
+          .orderBy("id")
           .orderBy("createdAt")
+          .where("isActive", isEqualTo: true)
           .startAfter([lastReadAjan.data()])
           .limit(Globals.maximumAjanLimit)
           .get();
@@ -60,7 +69,6 @@ class HomeProvider extends ChangeNotifier {
         );
       });
       ajanList = ajanListTemp;
-      notifyListeners();
     } catch(exception) {
       rethrow;
     } finally {
@@ -69,53 +77,49 @@ class HomeProvider extends ChangeNotifier {
     }
   }
 
-  // likeAjan() {
-  //   ajanList.last.likingAjanList.add(FirebaseAuth.instance.currentUser!.uid);
-  //   AjanModel likedAjan = ajanList.removeLast();
-  //   likedAjanList.add(likedAjan);
-  //   if(kDebugMode) { // saving writes in production: updating database only after ten likes
-  //     if(likedAjanList.isNotEmpty) updateLikedAjanOnFirebase(likedAjanList);
-  //   } else {
-  //     if(likedAjanList.length == Globals.maximumAjanLimit) updateLikedAjanOnFirebase(likedAjanList);
-  //   }
-  //
-  //   checkIfAjanListIsEmpty();
-  // }
-  //
-  // dislikeAjan() {
-  //   ajanList.last.dislikingAjanList.add(FirebaseAuth.instance.currentUser!.uid);
-  //   AjanModel dislikedAjan = ajanList.removeLast();
-  //   dislikedAjanList.add(dislikedAjan);
-  //   if(kDebugMode) { // saving writes in production: updating database only after ten likes
-  //     if(dislikedAjanList.isNotEmpty) updateDislikedAjanOnFirebase(dislikedAjanList);
-  //   } else {
-  //     if(dislikedAjanList.length == Globals.maximumAjanLimit) updateDislikedAjanOnFirebase(dislikedAjanList);
-  //   }
-  // }
+  likeAjan(BuildContext context, AjanModel likedAjan) {
+    Provider.of<AuthProvider>(context, listen: false).loggedUser.likedAjanList.add(likedAjan.id);
+    ajanList.remove(likedAjan);
+    if(kDebugMode) { // saving writes in production: updating database only after ten likes
+      if(Provider.of<AuthProvider>(context, listen: false).loggedUser.likedAjanList.isNotEmpty) updateLikedAjanOnFirebase(context);
+    } else {
+      if(likedAjanList.length == Globals.maximumAjanLimit) updateLikedAjanOnFirebase(context);
+    }
+
+    // checkIfAjanListIsEmpty();
+  }
+
+  dislikeAjan(BuildContext context, AjanModel dislikedAjan) {
+    Provider.of<AuthProvider>(context, listen: false).loggedUser.dislikedAjanList.add(dislikedAjan.id);
+    ajanList.remove(dislikedAjan);
+    if(kDebugMode) { // saving writes in production: updating database only after ten likes
+      if(Provider.of<AuthProvider>(context, listen: false).loggedUser.dislikedAjanList.isNotEmpty) updateDislikedAjanOnFirebase(context);
+    } else {
+      if(likedAjanList.length == Globals.maximumAjanLimit) updateDislikedAjanOnFirebase(context);
+    }
+
+    // checkIfAjanListIsEmpty();
+  }
 
   checkIfAjanListIsEmpty() {
     if(ajanList.isEmpty) getAdditionalAjanList();
   }
 
-  // updateLikedAjanOnFirebase(List<AjanModel> likedAjanList) {
-  //   for(AjanModel ajanModel in likedAjanList) {
-  //     FirebaseFirestore.instance
-  //         .collection(Globals.FCN_ajan)
-  //         .doc(ajanModel.id)
-  //         .update({'likingAjanList': ajanModel.likingAjanList})
-  //         .then((value) => Utils.showToast("Liké !"))
-  //         .catchError((onError) => throw onError);
-  //   }
-  // }
-  //
-  // updateDislikedAjanOnFirebase(List<AjanModel> dislikedAjanList) {
-  //   for(AjanModel ajanModel in dislikedAjanList) {
-  //     FirebaseFirestore.instance
-  //         .collection(Globals.FCN_ajan)
-  //         .doc(ajanModel.id)
-  //         .update({'dislikingAjanList': ajanModel.dislikingAjanList})
-  //         .then((value) => Utils.showToast("Pas aimé !"))
-  //         .catchError((onError) => throw onError);
-  //   }
-  // }
+  updateLikedAjanOnFirebase(BuildContext context) {
+    FirebaseFirestore.instance
+        .collection(Globals.FCN_ajan)
+        .doc(Provider.of<AuthProvider>(context, listen: false).loggedUser.id)
+        .update({Globals.FDP_likedAjanList: FieldValue.arrayUnion(Provider.of<AuthProvider>(context, listen: false).loggedUser.likedAjanList)})
+        .then((value) => Utils.showToast("Liké !"))
+        .catchError((onError) => throw onError);
+  }
+
+  updateDislikedAjanOnFirebase(BuildContext context) {
+    FirebaseFirestore.instance
+        .collection(Globals.FCN_ajan)
+        .doc(Provider.of<AuthProvider>(context, listen: false).loggedUser.id)
+        .update({Globals.FDP_dislikedAjanList: FieldValue.arrayUnion(Provider.of<AuthProvider>(context, listen: false).loggedUser.dislikedAjanList)})
+        .then((value) => Utils.showToast("Pas aimé !"))
+        .catchError((onError) => throw onError);
+  }
 }

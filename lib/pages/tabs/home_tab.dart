@@ -1,5 +1,6 @@
 import 'package:ajanchat/constants/file_assets.dart';
 import 'package:ajanchat/models/ajan_model.dart';
+import 'package:ajanchat/providers/auth_provider.dart';
 import 'package:ajanchat/providers/home_provider.dart';
 import 'package:ajanchat/utils/utils.dart';
 import 'package:ajanchat/widgets/loading.dart';
@@ -16,6 +17,13 @@ class HomeTab extends StatefulWidget {
 
 class _HomeTabState extends State<HomeTab> {
   bool isBusy = false;
+  AuthProvider authProvider = AuthProvider();
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    authProvider = Provider.of<AuthProvider>(context);
+  }
 
   @override
   void initState() {

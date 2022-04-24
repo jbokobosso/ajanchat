@@ -352,6 +352,10 @@ class AuthProvider extends ChangeNotifier {
 
   void storeUserOnFirebase() {
     signupAjan.id = FirebaseAuth.instance.currentUser!.uid;
+    // The two following lines are to prevent showing self profile on ajan list.
+    // It also initializes the concerned arrays as filter based on them must not be with empty array
+    signupAjan.dislikedAjanList.add(FirebaseAuth.instance.currentUser!.uid);
+    signupAjan.likedAjanList.add(FirebaseAuth.instance.currentUser!.uid);
     signupAjan.images = uploadedDownloadUrls;
     FirebaseFirestore
         .instance
