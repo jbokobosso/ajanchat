@@ -3,7 +3,6 @@ import 'package:ajanchat/constants/routes.dart';
 import 'package:ajanchat/providers/auth_provider.dart';
 import 'package:ajanchat/utils/utils.dart';
 import 'package:ajanchat/widgets/gradient_tile.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:rive/rive.dart';
@@ -20,13 +19,14 @@ class _AuthPageState extends State<AuthPage> {
   @override
   void initState() {
     super.initState();
-    checkUserIsLogged();
+    startupLogic();
   }
 
-  Future<void> checkUserIsLogged() async {
+  Future<void> startupLogic() async {
     bool userIsLogged = await Provider.of<AuthProvider>(context, listen: false).checkUserIsLogged();
     if(userIsLogged) {
       Utils.showToast("Bienvenue !");
+      Provider.of<AuthProvider>(context, listen: false).loadLoggedUserFromFirebase();
       Navigator.of(context).pushNamedAndRemoveUntil(RouteNames.tabs, (Route route) => false);
     }
   }

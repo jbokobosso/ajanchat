@@ -30,10 +30,10 @@ class _AjanTileState extends State<AjanTile> {
       height: MediaQuery.of(context).size.height*0.6,
       child: Swipable(
         onSwipeRight: (Offset offset) {
-          Provider.of<HomeProvider>(context, listen: false).likeAjan();
+          // Provider.of<HomeProvider>(context, listen: false).likeAjan();
         },
         onSwipeLeft: (Offset offset) {
-          Provider.of<HomeProvider>(context, listen: false).dislikeAjan();
+          // Provider.of<HomeProvider>(context, listen: false).dislikeAjan();
         },
         child: Stack(
           alignment: Alignment.bottomCenter,

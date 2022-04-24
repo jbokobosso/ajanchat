@@ -1,7 +1,6 @@
 import 'package:ajanchat/models/RelationPreferences.dart';
 import 'package:ajanchat/models/place_model.dart';
 import 'package:ajanchat/utils/utils.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 
 class AjanModel {
   String id;
@@ -14,8 +13,8 @@ class AjanModel {
   late List<dynamic> images;
   PlaceModel? location;
   bool isActive;
-  List<String> likingAjanList = [];
-  List<String> dislikingAjanList = [];
+  List<dynamic> likedAjanList;
+  List<dynamic> dislikedAjanList;
 
   AjanModel({
     this.id = "",
@@ -27,11 +26,14 @@ class AjanModel {
     this.relationPreferences,
     required this.images,
     this.location,
-    this.isActive = true
+    this.isActive = true,
+    required this.likedAjanList,
+    required this.dislikedAjanList,
   });
 
   Map<String, dynamic> toMap() {
     return {
+      "id": id,
       "phoneNumber": phoneNumber,
       "createdAt": createdAt,
       "displayName": displayName,
@@ -40,7 +42,9 @@ class AjanModel {
       "relationPreferences": relationPreferences!.toMap(),
       "images": images,
       "location": location!.toMap(),
-      "isActive": isActive
+      "isActive": isActive,
+      "likedAjanList": likedAjanList,
+      "dislikedAjanList": dislikedAjanList
     };
   }
 
@@ -55,7 +59,9 @@ class AjanModel {
       relationPreferences: RelationPreferences.fromMap(firebaseData['relationPreferences']),
       images: firebaseData['images'],
       location: PlaceModel.fromMap(firebaseData['location']),
-      isActive: firebaseData['isActive']
+      isActive: firebaseData['isActive'],
+      likedAjanList: firebaseData['likedAjanList'],
+      dislikedAjanList: firebaseData['dislikedAjanList']
     );
   }
 }

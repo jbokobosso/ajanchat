@@ -30,7 +30,14 @@ class AuthProvider extends ChangeNotifier {
     preferences: [],
     images: [],
     birthDate: DateTime.fromMicrosecondsSinceEpoch(1000),
-    relationPreferences: RelationPreferences(iam: Gender.spartan, iWannaMeet: Gender.spartan, relationType: ERelationType.spartan)
+    relationPreferences: RelationPreferences(iam: Gender.spartan, iWannaMeet: Gender.spartan, relationType: ERelationType.spartan), dislikedAjanList: [], likedAjanList: []
+  );
+  AjanModel loggedUser = AjanModel(
+    phoneNumber: "",
+    preferences: [],
+    images: [],
+    birthDate: DateTime.fromMicrosecondsSinceEpoch(1000),
+    relationPreferences: RelationPreferences(iam: Gender.spartan, iWannaMeet: Gender.spartan, relationType: ERelationType.spartan), dislikedAjanList: [], likedAjanList: []
   );
   bool isBusy = false;
   String errorMessage  = "";
@@ -325,6 +332,13 @@ class AuthProvider extends ChangeNotifier {
     Navigator.of(context).pushNamed(RouteNames.tabs);
   }
 
+  Future<void> loadLoggedUserFromFirebase() async {
+    FirebaseFirestore.instance.collection(Globals.FCN_ajan)
+        .doc(FirebaseAuth.instance.currentUser!.uid)
+        .get()
+        .then((value) => loggedUser = AjanModel.fromMap(value.data()!, value.id));
+  }
+
   Future<bool> checkUserIsLogged() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     return prefs.getBool(Globals.S_isLogged) ?? false;
@@ -337,6 +351,7 @@ class AuthProvider extends ChangeNotifier {
   }
 
   void storeUserOnFirebase() {
+    signupAjan.id = FirebaseAuth.instance.currentUser!.uid;
     signupAjan.images = uploadedDownloadUrls;
     FirebaseFirestore
         .instance
