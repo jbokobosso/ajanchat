@@ -12,6 +12,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 class HomeProvider extends ChangeNotifier {
   List<AjanModel> ajanList = [];
   List<AjanModel> likedAjanList = [];
+  List<AjanModel> dislikedAjanList = [];
   late DocumentSnapshot lastReadAjan;
   bool isBusy = true;
 
@@ -69,7 +70,7 @@ class HomeProvider extends ChangeNotifier {
   }
 
   likeAjan() {
-    ajanList.last.likingsAjans.add(FirebaseAuth.instance.currentUser!.uid);
+    ajanList.last.likingAjanList.add(FirebaseAuth.instance.currentUser!.uid);
     AjanModel likedAjan = ajanList.removeLast();
     likedAjanList.add(likedAjan);
     if(kDebugMode) { // saving writes in production: updating database only after ten likes
@@ -81,6 +82,17 @@ class HomeProvider extends ChangeNotifier {
     checkIfAjanListIsEmpty();
   }
 
+  dislikeAjan() {
+    ajanList.last.dislikingAjanList.add(FirebaseAuth.instance.currentUser!.uid);
+    AjanModel dislikedAjan = ajanList.removeLast();
+    dislikedAjanList.add(dislikedAjan);
+    if(kDebugMode) { // saving writes in production: updating database only after ten likes
+      if(dislikedAjanList.isNotEmpty) updateDislikedAjanOnFirebase(dislikedAjanList);
+    } else {
+      if(dislikedAjanList.length == Globals.maximumAjanLimit) updateDislikedAjanOnFirebase(dislikedAjanList);
+    }
+  }
+
   checkIfAjanListIsEmpty() {
     if(ajanList.isEmpty) getAdditionalAjanList();
   }
@@ -90,8 +102,19 @@ class HomeProvider extends ChangeNotifier {
       FirebaseFirestore.instance
           .collection(Globals.FCN_ajan)
           .doc(ajanModel.id)
-          .update({'likingsAjans': ajanModel.likingsAjans})
+          .update({'likingAjanList': ajanModel.likingAjanList})
           .then((value) => Utils.showToast("Liké !"))
+          .catchError((onError) => throw onError);
+    }
+  }
+
+  updateDislikedAjanOnFirebase(List<AjanModel> dislikedAjanList) {
+    for(AjanModel ajanModel in dislikedAjanList) {
+      FirebaseFirestore.instance
+          .collection(Globals.FCN_ajan)
+          .doc(ajanModel.id)
+          .update({'dislikingAjanList': ajanModel.dislikingAjanList})
+          .then((value) => Utils.showToast("Pas aimé !"))
           .catchError((onError) => throw onError);
     }
   }

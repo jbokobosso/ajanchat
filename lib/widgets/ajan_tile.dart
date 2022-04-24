@@ -32,6 +32,9 @@ class _AjanTileState extends State<AjanTile> {
         onSwipeRight: (Offset offset) {
           Provider.of<HomeProvider>(context, listen: false).likeAjan();
         },
+        onSwipeLeft: (Offset offset) {
+          Provider.of<HomeProvider>(context, listen: false).dislikeAjan();
+        },
         child: Stack(
           alignment: Alignment.bottomCenter,
           children: [

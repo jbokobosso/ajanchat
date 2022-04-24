@@ -14,7 +14,8 @@ class AjanModel {
   late List<dynamic> images;
   PlaceModel? location;
   bool isActive;
-  List<String> likingsAjans = [];
+  List<String> likingAjanList = [];
+  List<String> dislikingAjanList = [];
 
   AjanModel({
     this.id = "",
