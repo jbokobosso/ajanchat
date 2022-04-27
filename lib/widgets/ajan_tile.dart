@@ -66,7 +66,7 @@ class _AjanTileState extends State<AjanTile> {
                             padding: EdgeInsets.zero,
                             scrollDirection: Axis.horizontal,
                             children: widget.ajan.preferences.map(
-                              (pref) => Text(pref, style: const TextStyle(color: Colors.white60))
+                              (pref) => Text("$pref ${widget.ajan.preferences.indexOf(pref) == widget.ajan.preferences.length-1 ? '' : ' | '}", style: const TextStyle(color: Colors.white60))
                             ).toList(),
                           ),
                         )
