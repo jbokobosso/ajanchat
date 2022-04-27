@@ -6,6 +6,7 @@ import 'package:ajanchat/constants/routes.dart';
 import 'package:ajanchat/providers/auth_provider.dart';
 import 'package:ajanchat/utils/utils.dart';
 import 'package:ajanchat/widgets/loading.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -53,6 +54,16 @@ class _OtpState extends State<Otp> {
         duration: const Duration(seconds: 2),
       ),
     );
+  }
+
+  verifyProfileExists() async {
+    if(FirebaseAuth.instance.currentUser != null) {
+      var data = await FirebaseFirestore.instance
+          .collection(Globals.FCN_ajan)
+          .doc(FirebaseAuth.instance.currentUser!.uid)
+          .get();
+      return data.exists;
+    }
   }
 
   @override
@@ -235,10 +246,15 @@ class _OtpState extends State<Otp> {
                             errorController!.add(ErrorAnimationType.shake); // Triggering error shake animation
                             setState(() => hasError = true);
                           } else {
-                            setState((){
+                            setState(() async {
                               hasError = false;
-                              Navigator.of(context).pushNamed(RouteNames.infos);
-                              Utils.showToast("Code vérifié!!");
+                              bool profileExists = await verifyProfileExists();
+                              if(profileExists) {
+                                Navigator.of(context).pushNamed(RouteNames.tabs);
+                              } else {
+                                Navigator.of(context).pushNamed(RouteNames.infos);
+                              }
+                              Utils.showToast("Numéro Téléphone vérifié!!");
                             });
                           }
                         },

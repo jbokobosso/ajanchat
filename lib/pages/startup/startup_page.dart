@@ -29,7 +29,7 @@ class _StartupPageState extends State<StartupPage> {
   Future<void> startupLogic() async {
     bool userIsLogged = await Provider.of<AuthProvider>(context, listen: false).checkUserIsLogged();
     if(userIsLogged) {
-      Provider.of<AuthProvider>(context, listen: false).loadLoggedUserFromFirebase();
+      await Provider.of<AuthProvider>(context, listen: false).loadLoggedUserFromFirebaseAndNotify();
       Navigator.of(context).pushNamedAndRemoveUntil(RouteNames.tabs, (Route route) => false);
     } else {
       Navigator.of(context).pushNamedAndRemoveUntil(RouteNames.auth, (Route route) => false);

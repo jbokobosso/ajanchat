@@ -1,10 +1,7 @@
 import 'package:ajanchat/constants/file_assets.dart';
 import 'package:ajanchat/constants/routes.dart';
-import 'package:ajanchat/providers/auth_provider.dart';
-import 'package:ajanchat/utils/utils.dart';
 import 'package:ajanchat/widgets/gradient_tile.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:rive/rive.dart';
 
 class AuthPage extends StatefulWidget {
@@ -52,7 +49,7 @@ class _AuthPageState extends State<AuthPage> {
                   ),
                   SizedBox(height: 50),
                   GestureDetector(
-                    onTap: () => Navigator.pushNamed(context, RouteNames.phone),
+                    onTap: () => Navigator.pushNamed(context, RouteNames.login),
                     child: const GradientTile(
                       tileText: 'Se connecter',
                       tileAlignment: Alignment.centerRight,

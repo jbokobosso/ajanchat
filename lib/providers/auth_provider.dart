@@ -142,29 +142,6 @@ class AuthProvider extends ChangeNotifier {
     navigateTo(authBuildContext, RouteNames.otp, arguments: params);
   }
 
-  void onCodeAutoRetrievalTimeout(String verificationId) {
-
-  }
-
-  void navigateTo(BuildContext context, String routeName, {dynamic arguments = 117}) {
-    Navigator.pushNamed(context, routeName, arguments: arguments);
-  }
-
-  Future<bool> markAuthenticated() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    return await prefs.setBool(S_isAuthenticated, true);
-  }
-
-  Future<bool> checkAuthenticated() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    bool? result = prefs.getBool(S_isAuthenticated);
-    if(result == true) {
-      return true;
-    } else {
-      return false;
-    }
-  }
-
   Future<bool> verifyCodeSentManually(String verificationId, String userTypedCode) async {
     try {
       isBusy = true;
@@ -186,6 +163,29 @@ class AuthProvider extends ChangeNotifier {
       return false;
     } finally {
       isBusy = false;
+    }
+  }
+
+  void onCodeAutoRetrievalTimeout(String verificationId) {
+
+  }
+
+  void navigateTo(BuildContext context, String routeName, {dynamic arguments = 117}) {
+    Navigator.pushNamed(context, routeName, arguments: arguments);
+  }
+
+  Future<bool> markAuthenticated() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    return await prefs.setBool(S_isAuthenticated, true);
+  }
+
+  Future<bool> checkAuthenticated() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    bool? result = prefs.getBool(S_isAuthenticated);
+    if(result == true) {
+      return true;
+    } else {
+      return false;
     }
   }
 
@@ -400,7 +400,15 @@ class AuthProvider extends ChangeNotifier {
 
   Future<bool> checkUserIsLogged() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    return prefs.getBool(Globals.S_isLogged) ?? false;
+    bool condition1 =  prefs.getBool(Globals.S_isLogged) ?? false;
+
+    bool condition2 = false;
+    if(FirebaseAuth.instance.currentUser != null) {
+      var data = await FirebaseFirestore.instance.collection(Globals.FCN_ajan).doc(FirebaseAuth.instance.currentUser!.uid).get();
+      condition2 = data.exists;
+    }
+
+    return condition1 || condition2;
   }
 
   Future<bool> markUserLogged() async {
