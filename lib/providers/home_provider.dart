@@ -18,13 +18,12 @@ class HomeProvider extends ChangeNotifier {
   List<AjanModel> dislikedAjanList = [];
   late DocumentSnapshot lastReadAjan;
   bool isBusy = true;
-  AuthProvider _authProvider = AuthProvider();
+  final AuthProvider _authProvider = AuthProvider();
 
   getAjanList() async {
-    if(ajanList.isNotEmpty) return;
-    isBusy = true;
     try {
-      List<AjanModel> ajanListTemp =[];
+      if(ajanList.isNotEmpty) return;
+      List<AjanModel> ajanListTemp = [];
       QuerySnapshot<Map<String, dynamic>> data = await FirebaseFirestore.instance
           .collection(Globals.FCN_ajan)
           .where("id", isNotEqualTo: FirebaseAuth.instance.currentUser!.uid)
@@ -33,17 +32,18 @@ class HomeProvider extends ChangeNotifier {
           .where("isActive", isEqualTo: true)
           .limit(Globals.maximumAjanLimit)
           .get();
-      data.docs.forEach((QueryDocumentSnapshot<Map<String, dynamic>> queryDocumentSnapshot) {
+      for (var queryDocumentSnapshot in data.docs) {
         ajanListTemp.add(
             AjanModel.fromMap(queryDocumentSnapshot.data(), queryDocumentSnapshot.id)
         );
-      });
+      }
       ajanList = ajanListTemp;
       if(data.docs.isNotEmpty) lastReadAjan = data.docs.last;
     } catch(exception) {
       rethrow;
     } finally {
       isBusy = false;
+      notifyListeners();
       if(ajanList.isEmpty) Utils.showToast("Base de donnée vide!");
     }
   }
