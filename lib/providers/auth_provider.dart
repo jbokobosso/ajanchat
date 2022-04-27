@@ -340,7 +340,11 @@ class AuthProvider extends ChangeNotifier {
       await uploadProfilePictures();
       storeUserOnFirebase();
       await markUserLogged();
-      Navigator.of(context).pushNamed(RouteNames.tabs);
+      if(kDebugMode) {
+        Navigator.of(context).pushNamed(RouteNames.tabs);
+      } else {
+        Navigator.of(context).pushNamedAndRemoveUntil(RouteNames.tabs, (route) => false);
+      }
     } catch(exception) {
       rethrow;
     } finally {

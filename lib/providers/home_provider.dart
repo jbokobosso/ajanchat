@@ -105,11 +105,7 @@ class HomeProvider extends ChangeNotifier {
   likeAjan(BuildContext context, AjanModel likedAjan) {
     likedAjanList.add(likedAjan.id);
     ajanList.remove(likedAjan);
-    if(kDebugMode) { // saving writes in production: updating database only after ten likes
-      if(likedAjanList.isNotEmpty) updateLikedAjanOnFirebase(context);
-    } else {
-      if(likedAjanList.length == Globals.maximumAjanLimit) updateLikedAjanOnFirebase(context);
-    }
+    updateLikedAjanOnFirebase(context);
 
     checkIfAjanListIsEmpty();
   }
@@ -117,11 +113,7 @@ class HomeProvider extends ChangeNotifier {
   dislikeAjan(BuildContext context, AjanModel dislikedAjan) {
     dislikedAjanList.add(dislikedAjan.id);
     ajanList.remove(dislikedAjan);
-    if(kDebugMode) { // saving writes in production: updating database only after ten likes
-      if(dislikedAjanList.isNotEmpty) updateDislikedAjanOnFirebase(context);
-    } else {
-      if(dislikedAjanList.length == Globals.maximumAjanLimit) updateDislikedAjanOnFirebase(context);
-    }
+    updateDislikedAjanOnFirebase(context);
 
     checkIfAjanListIsEmpty();
   }
