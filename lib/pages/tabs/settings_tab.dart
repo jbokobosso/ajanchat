@@ -44,9 +44,26 @@ class _SettingsTabState extends State<SettingsTab> {
           ),
         ),
         const Divider(),
-        const ListTile(leading: Icon(Icons.share), title: Text("Partager")),
+        const ListTile(leading: Icon(Icons.camera_alt_outlined), title: Text("Modifier Mes Photos")),
         const Divider(),
-        const ListTile(leading: Icon(Icons.comment), title: Text("Notez sur PlayStore")),
+        Consumer<AuthProvider>(
+            builder: (context, authProvider, child) => ListTile(
+              leading: Icon(Icons.delete, color: Theme.of(context).primaryColor),
+              title: const Text("Supprimer Mon Compte", style: TextStyle(color: Colors.red)),
+              onTap: () => showDialog(
+                  barrierDismissible: false,
+                  context: context,
+                  builder: (_) => AlertDialog(
+                      title: const Text("ATTENTION !!!"),
+                      content: const Text(Globals.deleteAccountWarningMessage),
+                      actions: [
+                        TextButton(onPressed: () => authProvider.deleteAccountAndLogout(context), child: Text("Confirmer Suppression", style: TextStyle(color: Theme.of(context).primaryColor),)),
+                        TextButton(onPressed: () => Navigator.pop(context), child: Text("Ne plus supprimer", style: TextStyle(color: Theme.of(context).accentColor),))
+                      ]
+                  )
+              ),
+              trailing: authProvider.isLoggingOut ? const CircularProgressIndicator() : const SizedBox(height: 0, width: 0),
+            )),
         const Divider(),
         Consumer<AuthProvider>(
           builder: (context, authProvider, child) => ListTile(
@@ -56,7 +73,7 @@ class _SettingsTabState extends State<SettingsTab> {
               barrierDismissible: false,
               context: context,
               builder: (_) => AlertDialog(
-                content: Text("Etes-vous sûr ?"),
+                content: const Text("Etes-vous sûr ?"),
                 actions: [
                   TextButton(onPressed: () => authProvider.logout(context), child: Text("Oui", style: TextStyle(color: Theme.of(context).primaryColor),)),
                   TextButton(onPressed: () => Navigator.pop(context), child: Text("Non", style: TextStyle(color: Theme.of(context).accentColor),))

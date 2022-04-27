@@ -9,6 +9,9 @@ class Globals {
   static const String firebaseDevSmsCode = "012345";
   static const int maximumAgeInDays = 6570;
   static const int minimumAgeInDays = 29200;
+  static const String deleteAccountWarningMessage = ""
+      "Votre profil sera supprimé de notre base et vous ne pourrez plus le restaurer. Vous n'apparaitrez plus dans les recherches."
+      "Vous pourrez toute-fois toujours revenir vous inscrire comme un nouveau membre.";
 
 
 

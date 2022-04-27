@@ -21,6 +21,7 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl_phone_number_input/intl_phone_number_input.dart';
 import 'package:location/location.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AuthProvider extends ChangeNotifier {
@@ -353,7 +354,25 @@ class AuthProvider extends ChangeNotifier {
     }
   }
 
-  logout(BuildContext buildContext) {
+  logout(BuildContext buildContext) async {
+    isLoggingOut = true;
+    notifyListeners();
+    try {
+      FirebaseAuth.instance.signOut();
+      loggedUser = defaultUser;
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      prefs.setBool(Globals.S_isLogged, false);
+      Navigator.of(buildContext).pushNamedAndRemoveUntil(RouteNames.auth, (route) => false);
+      Utils.showToast("Déconnecté !");
+    } catch(exception) {
+      rethrow;
+    } finally {
+      isLoggingOut = false;
+      notifyListeners();
+    }
+  }
+
+  deleteAccountAndLogout(BuildContext buildContext) {
     isLoggingOut = true;
     notifyListeners();
     try {
@@ -367,7 +386,7 @@ class AuthProvider extends ChangeNotifier {
         SharedPreferences prefs = await SharedPreferences.getInstance();
         prefs.setBool(Globals.S_isLogged, false);
         Navigator.of(buildContext).pushNamedAndRemoveUntil(RouteNames.auth, (route) => false);
-        Utils.showToast("Déconnecté !");
+        Utils.showToast("Compte supprimé !");
       });
     } catch(exception) {
       rethrow;

@@ -246,16 +246,26 @@ class _OtpState extends State<Otp> {
                             errorController!.add(ErrorAnimationType.shake); // Triggering error shake animation
                             setState(() => hasError = true);
                           } else {
-                            setState(() async {
+                            setState(() {
                               hasError = false;
-                              bool profileExists = await verifyProfileExists();
-                              if(profileExists) {
-                                Navigator.of(context).pushNamed(RouteNames.tabs);
-                              } else {
-                                Navigator.of(context).pushNamed(RouteNames.infos);
-                              }
-                              Utils.showToast("Numéro Téléphone vérifié!!");
                             });
+                            bool profileExists = await verifyProfileExists();
+                            if(profileExists) {
+                              Navigator.of(context).pushNamed(RouteNames.tabs);
+                            } else {
+                              showDialog(
+                                barrierDismissible: false,
+                                context: context,
+                                builder: (_) => AlertDialog(
+                                  content: const Text("Vous n'êtes pas inscrit dans notre base. Nous allons donc procéder à l'inscription."),
+                                  actions: [
+                                    TextButton(onPressed: () => Navigator.pop(context), child: Text("Non J'arrête", style: TextStyle(color: Theme.of(context).accentColor))),
+                                    TextButton(onPressed: () => Navigator.of(context).pushNamed(RouteNames.infos), child: Text("D'accord", style: TextStyle(color: Colors.green))),
+                                  ],
+                                )
+                              );
+                            }
+                            Utils.showToast("Numéro Téléphone vérifié!!");
                           }
                         },
                         child: Center(child: Text("Vérifier".toUpperCase(), style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),)),)
