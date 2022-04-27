@@ -6,12 +6,14 @@ import 'package:ajanchat/pages/auth/phone_page.dart';
 import 'package:ajanchat/pages/auth/pictures_page.dart';
 import 'package:ajanchat/pages/auth/preferences_page.dart';
 import 'package:ajanchat/pages/auth/register_page.dart';
+import 'package:ajanchat/pages/startup/startup_page.dart';
 import 'package:ajanchat/pages/tabs/chat/single_chat_page.dart';
 import 'package:ajanchat/pages/tabs/tabs_page.dart';
 import 'package:ajanchat/widgets/otp.dart';
 import 'package:flutter/material.dart';
 
 class RouteNames {
+  static String startup = "/startup";
   static String auth = "/auth";
   static String otp = "/otp";
   static String register = "/register";
@@ -26,6 +28,7 @@ class RouteNames {
 }
 
 Map<String, Widget Function(BuildContext)> routes = <String, WidgetBuilder> {
+  RouteNames.startup : (BuildContext context) => const StartupPage(),
   RouteNames.auth : (BuildContext context) => const AuthPage(),
   RouteNames.otp : (BuildContext context) => Otp(),
   RouteNames.register : (BuildContext context) => const RegisterPage(),

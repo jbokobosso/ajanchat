@@ -17,21 +17,6 @@ class AuthPage extends StatefulWidget {
 class _AuthPageState extends State<AuthPage> {
 
   @override
-  void initState() {
-    super.initState();
-    startupLogic();
-  }
-
-  Future<void> startupLogic() async {
-    bool userIsLogged = await Provider.of<AuthProvider>(context, listen: false).checkUserIsLogged();
-    if(userIsLogged) {
-      Utils.showToast("Bienvenue !");
-      Provider.of<AuthProvider>(context, listen: false).loadLoggedUserFromFirebase();
-      Navigator.of(context).pushNamedAndRemoveUntil(RouteNames.tabs, (Route route) => false);
-    }
-  }
-
-  @override
   Widget build(BuildContext context) {
     return Scaffold(
         body: Container(

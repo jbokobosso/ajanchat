@@ -379,7 +379,6 @@ class AuthProvider extends ChangeNotifier {
         .get()
         .then((value) {
       loggedUser = AjanModel.fromMap(value.data()!, value.id);
-      Utils.showToast("Utilisateur chargé");
     });
   }
 
