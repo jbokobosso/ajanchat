@@ -14,19 +14,38 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class HomeProvider extends ChangeNotifier {
   List<AjanModel> ajanList = [];
-  List<AjanModel> likedAjanList = [];
-  List<AjanModel> dislikedAjanList = [];
+  List<dynamic> likedAjanList = [];
+  List<dynamic> dislikedAjanList = [];
   late DocumentSnapshot lastReadAjan;
   bool isBusy = true;
-  final AuthProvider _authProvider = AuthProvider();
+
+  HomeProvider() {
+    likedAjanList.add(FirebaseAuth.instance.currentUser!.uid);
+    dislikedAjanList.add(FirebaseAuth.instance.currentUser!.uid);
+  }
+
+  Future<AjanModel> getLoggedUserFromFirebase() async {
+    var result = await FirebaseFirestore.instance.collection(Globals.FCN_ajan)
+        .doc(FirebaseAuth.instance.currentUser!.uid)
+        .get();
+    return AjanModel.fromMap(result.data()!, result.id);
+  }
 
   getAjanList() async {
     try {
       if(ajanList.isNotEmpty) return;
       List<AjanModel> ajanListTemp = [];
+
+      List<dynamic> ajanToExlude = [];
+      ajanToExlude.addAll(likedAjanList);
+      ajanToExlude.addAll(dislikedAjanList);
+      AjanModel _loggedUser = await getLoggedUserFromFirebase();
+      ajanToExlude.addAll(_loggedUser.dislikedAjanList);
+      ajanToExlude.addAll(_loggedUser.likedAjanList);
+
       QuerySnapshot<Map<String, dynamic>> data = await FirebaseFirestore.instance
           .collection(Globals.FCN_ajan)
-          .where("id", isNotEqualTo: FirebaseAuth.instance.currentUser!.uid)
+          .where("id", whereNotIn: ajanToExlude)
           .orderBy("id")
           .orderBy("createdAt")
           .where("isActive", isEqualTo: true)
@@ -49,25 +68,31 @@ class HomeProvider extends ChangeNotifier {
   }
 
   getAdditionalAjanList() async {
-    isBusy = true;
-    notifyListeners();
     try {
+      isBusy = true;
+      notifyListeners();
+      // likedAjanList = [FirebaseAuth.instance.currentUser!.uid]; // reset data for not using old uneeded data because surely already updated on firebase
+      // dislikedAjanList = [FirebaseAuth.instance.currentUser!.uid];
       List<AjanModel> ajanListTemp =[];
+
+      List<dynamic> ajanToExlude = [];
+      ajanToExlude.addAll(likedAjanList);
+      ajanToExlude.addAll(dislikedAjanList);
+
       QuerySnapshot<Map<String, dynamic>> data = await FirebaseFirestore.instance
           .collection(Globals.FCN_ajan)
-          .where("id", whereNotIn: _authProvider.loggedUser.likedAjanList)
-          .where("id", whereNotIn: _authProvider.loggedUser.dislikedAjanList)
+          .where("id", whereNotIn: ajanToExlude)
           .orderBy("id")
           .orderBy("createdAt")
           .where("isActive", isEqualTo: true)
-          .startAfter([lastReadAjan.data()])
+          // .startAfter([lastReadAjan.data()])
           .limit(Globals.maximumAjanLimit)
           .get();
-      data.docs.forEach((QueryDocumentSnapshot<Map<String, dynamic>> queryDocumentSnapshot) {
+      for (var queryDocumentSnapshot in data.docs) {
         ajanListTemp.add(
             AjanModel.fromMap(queryDocumentSnapshot.data(), queryDocumentSnapshot.id)
         );
-      });
+      }
       ajanList = ajanListTemp;
     } catch(exception) {
       rethrow;
@@ -78,27 +103,27 @@ class HomeProvider extends ChangeNotifier {
   }
 
   likeAjan(BuildContext context, AjanModel likedAjan) {
-    Provider.of<AuthProvider>(context, listen: false).loggedUser.likedAjanList.add(likedAjan.id);
+    likedAjanList.add(likedAjan.id);
     ajanList.remove(likedAjan);
     if(kDebugMode) { // saving writes in production: updating database only after ten likes
-      if(Provider.of<AuthProvider>(context, listen: false).loggedUser.likedAjanList.isNotEmpty) updateLikedAjanOnFirebase(context);
+      if(likedAjanList.isNotEmpty) updateLikedAjanOnFirebase(context);
     } else {
       if(likedAjanList.length == Globals.maximumAjanLimit) updateLikedAjanOnFirebase(context);
     }
 
-    // checkIfAjanListIsEmpty();
+    checkIfAjanListIsEmpty();
   }
 
   dislikeAjan(BuildContext context, AjanModel dislikedAjan) {
-    Provider.of<AuthProvider>(context, listen: false).loggedUser.dislikedAjanList.add(dislikedAjan.id);
+    dislikedAjanList.add(dislikedAjan.id);
     ajanList.remove(dislikedAjan);
     if(kDebugMode) { // saving writes in production: updating database only after ten likes
-      if(Provider.of<AuthProvider>(context, listen: false).loggedUser.dislikedAjanList.isNotEmpty) updateDislikedAjanOnFirebase(context);
+      if(dislikedAjanList.isNotEmpty) updateDislikedAjanOnFirebase(context);
     } else {
-      if(likedAjanList.length == Globals.maximumAjanLimit) updateDislikedAjanOnFirebase(context);
+      if(dislikedAjanList.length == Globals.maximumAjanLimit) updateDislikedAjanOnFirebase(context);
     }
 
-    // checkIfAjanListIsEmpty();
+    checkIfAjanListIsEmpty();
   }
 
   checkIfAjanListIsEmpty() {
@@ -108,8 +133,8 @@ class HomeProvider extends ChangeNotifier {
   updateLikedAjanOnFirebase(BuildContext context) {
     FirebaseFirestore.instance
         .collection(Globals.FCN_ajan)
-        .doc(Provider.of<AuthProvider>(context, listen: false).loggedUser.id)
-        .update({Globals.FDP_likedAjanList: FieldValue.arrayUnion(Provider.of<AuthProvider>(context, listen: false).loggedUser.likedAjanList)})
+        .doc(FirebaseAuth.instance.currentUser!.uid)
+        .update({Globals.FDP_likedAjanList: FieldValue.arrayUnion(likedAjanList)})
         .then((value) => Utils.showToast("Liké !"))
         .catchError((onError) => throw onError);
   }
@@ -117,8 +142,8 @@ class HomeProvider extends ChangeNotifier {
   updateDislikedAjanOnFirebase(BuildContext context) {
     FirebaseFirestore.instance
         .collection(Globals.FCN_ajan)
-        .doc(Provider.of<AuthProvider>(context, listen: false).loggedUser.id)
-        .update({Globals.FDP_dislikedAjanList: FieldValue.arrayUnion(Provider.of<AuthProvider>(context, listen: false).loggedUser.dislikedAjanList)})
+        .doc(FirebaseAuth.instance.currentUser!.uid)
+        .update({Globals.FDP_dislikedAjanList: FieldValue.arrayUnion(dislikedAjanList)})
         .then((value) => Utils.showToast("Pas aimé !"))
         .catchError((onError) => throw onError);
   }

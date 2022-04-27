@@ -379,6 +379,7 @@ class AuthProvider extends ChangeNotifier {
         .get()
         .then((value) {
       loggedUser = AjanModel.fromMap(value.data()!, value.id);
+      if(kDebugMode) print(loggedUser);
     });
   }
 

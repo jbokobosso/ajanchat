@@ -77,9 +77,9 @@ class _HomeTabState extends State<HomeTab> {
                         onTap: () => Utils.showToast("En construction..."),
                       ),
                     ),
-                    Stack(
-                      children: Provider.of<HomeProvider>(context).ajanList.map((e) => AjanTile(ajan: e)).toList(),
-                    ),
+                    homeProvider.ajanList.isNotEmpty ? Stack(
+                      children: homeProvider.ajanList.map((e) => AjanTile(ajan: e)).toList(),
+                    ) : const Text("Vide pour le moment...\nVeuillez revenir plus tard."),
                     // Row(
                     //   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     //   children: [
