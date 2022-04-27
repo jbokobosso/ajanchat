@@ -4,6 +4,7 @@ class Globals {
   ///   *          CORE             * ***/
   /// *  ***************************  * ***/
   static const int maximumAjanLimit = 1;
+  static const int maximumProfilePicturesCount = 3;
   static const String appName = "Ajan Chat";
   static const String appVersion = "1.0.0";
   static const String firebaseDevSmsCode = "012345";

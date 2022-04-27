@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:ajanchat/constants/file_assets.dart';
+import 'package:ajanchat/constants/globals.dart';
 import 'package:ajanchat/constants/routes.dart';
 import 'package:ajanchat/models/image_card_model.dart';
 import 'package:ajanchat/providers/auth_provider.dart';
@@ -56,9 +57,9 @@ class _PicturesPageState extends State<PicturesPage> {
               children: [
                 Text('Dernière étape', style: Theme.of(context).textTheme.headline6),
                 const SizedBox(height: 20.0),
-                const Text('Ajoutes au moins trois (03) photos'),
+                const Text('Ajoutes au moins trois (0${Globals.maximumProfilePicturesCount}) photos'),
                 Consumer<AuthProvider>(
-                  builder: (context, authProvider, child) => authProvider.images.takeWhile((value) => value.isFilled).toList().length < 3
+                  builder: (context, authProvider, child) => authProvider.images.takeWhile((value) => value.isFilled).toList().length < Globals.maximumProfilePicturesCount
                       ? Column(
                     children: [
                       const SizedBox(height: 20.0),
@@ -91,7 +92,7 @@ class _PicturesPageState extends State<PicturesPage> {
                     children: [
                       authProvider.isUploading || authProvider.isBusy
                           ? LottieBuilder.asset(FileAssets.lottieUploading, width: MediaQuery.of(context).size.width*0.3)
-                          : authProvider.images.takeWhile((value) => value.isFilled).toList().length >= 3
+                          : authProvider.images.takeWhile((value) => value.isFilled).toList().length >= Globals.maximumProfilePicturesCount
                             ? GestureDetector(
                               onTap: () => Provider.of<AuthProvider>(context, listen: false).onPicturesFormSaved(context),
                               child: const GradientTile(
