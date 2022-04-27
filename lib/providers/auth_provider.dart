@@ -1,3 +1,4 @@
+import 'dart:ffi';
 import 'dart:io';
 
 import 'package:ajanchat/constants/ajan_preferences.dart';
@@ -198,6 +199,9 @@ class AuthProvider extends ChangeNotifier {
       case Gender.male:
         genderPreference.iam = gender;
         break;
+      default:
+        genderPreference.iam = gender;
+        break;
     }
     notifyListeners();
   }
@@ -208,6 +212,9 @@ class AuthProvider extends ChangeNotifier {
         genderPreference.iWannaMeet = gender;
         break;
       case Gender.male:
+        genderPreference.iWannaMeet = gender;
+        break;
+      default:
         genderPreference.iWannaMeet = gender;
         break;
     }
@@ -225,6 +232,9 @@ class AuthProvider extends ChangeNotifier {
       case ERelationType.flirt:
         genderPreference.relationType = relationType;
         break;
+      default:
+        genderPreference.relationType = relationType;
+        break;
     }
     notifyListeners();
   }
@@ -234,16 +244,64 @@ class AuthProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> pickImage(int index) async {
-    final pickedFile = await picker.getImage(source: ImageSource.gallery);
-    if (pickedFile != null) {
-      images[index].image = File(pickedFile.path);
-      images[index].isFilled = true;
+  Future<void> pickImage(int index, BuildContext buildContext) async {
+    pickFile(ImageSource imageSource) async {
+      final pickedFile = await picker.getImage(source: imageSource, maxWidth: 300, maxHeight: 300);
+      if (pickedFile != null) {
+        images[index].image = File(pickedFile.path);
+        images[index].isFilled = true;
+        notifyListeners();
+      } else {
+        Utils.showToast("Acune image sélecionnée !");
+      }
       notifyListeners();
-    } else {
-      Utils.showToast("Acune image sélecionnée !");
+      Navigator.of(buildContext).pop();
     }
-    notifyListeners();
+
+    showModalBottomSheet(
+        context: buildContext,
+        builder: (buildContext) => SizedBox(
+          height: MediaQuery.of(buildContext).size.height*0.2,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              const Text("Choisir Photo", style: TextStyle(fontSize: 20)),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  Column(
+                    children: [
+                      IconButton(
+                          icon: const Icon(Icons.camera, size: 40),
+                          onPressed: () => pickFile(ImageSource.camera)
+                      ),
+                      const Text("Caméra")
+                    ],
+                  ),
+                  Column(
+                    children: [
+                      IconButton(
+                          icon: const Icon(Icons.photo, size: 40),
+                          onPressed: () => pickFile(ImageSource.gallery)
+                      ),
+                      const Text("Gallerie")
+                    ],
+                  )
+                ],
+              )
+            ],
+          ),
+        )
+    );
+    // final pickedFile = await picker.getImage(source: ImageSource.gallery);
+    // if (pickedFile != null) {
+    //   images[index].image = File(pickedFile.path);
+    //   images[index].isFilled = true;
+    //   notifyListeners();
+    // } else {
+    //   Utils.showToast("Acune image sélecionnée !");
+    // }
+    // notifyListeners();
   }
 
   void clearPictures(int index) {

@@ -31,6 +31,14 @@ class ChatAppBar extends StatelessWidget with PreferredSizeWidget {
       case ERelationType.flirt :
         relationTypeColor = FlirtColor;
         break;
+
+      case ERelationType.spartan :
+        relationTypeColor = Colors.white;
+        break;
+
+      case null :
+        relationTypeColor = Colors.white;
+        break;
     }
 
     return AppBar(

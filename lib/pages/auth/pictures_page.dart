@@ -57,6 +57,16 @@ class _PicturesPageState extends State<PicturesPage> {
                 Text('Dernière étape', style: Theme.of(context).textTheme.headline6),
                 const SizedBox(height: 20.0),
                 const Text('Ajoutes au moins trois (03) photos'),
+                Consumer<AuthProvider>(
+                  builder: (context, authProvider, child) => authProvider.images.takeWhile((value) => value.isFilled).toList().length < 3
+                      ? Column(
+                    children: [
+                      const SizedBox(height: 20.0),
+                      const Text("Ne laisses pas d'espaces au milieu. Remplis les cases de façon consécutive", style: TextStyle(color: Colors.red), textAlign: TextAlign.center),
+                    ],
+                  )
+                      : const SizedBox(height: 0, width: 0),
+                ),
                 SizedBox(
                   height: deviceHeight * 0.6,
                   child: Padding(
@@ -81,20 +91,22 @@ class _PicturesPageState extends State<PicturesPage> {
                     children: [
                       authProvider.isUploading || authProvider.isBusy
                           ? LottieBuilder.asset(FileAssets.lottieUploading, width: MediaQuery.of(context).size.width*0.3)
-                          : GestureDetector(
+                          : authProvider.images.takeWhile((value) => value.isFilled).toList().length >= 3
+                            ? GestureDetector(
                               onTap: () => Provider.of<AuthProvider>(context, listen: false).onPicturesFormSaved(context),
                               child: const GradientTile(
                                   tileText: "S'inscrire",
                                   tileAlignment: Alignment.centerRight),
-                            ),
+                            )
+                            : const SizedBox(height: 0, width: 0),
                       authProvider.isUploading
                           ? Column(
-                        children: [
-                          const Text("Téléversement des images"),
-                          Text("Image N° ${authProvider.currentUploadingImageCount}", style: TextStyle(color: Theme.of(context).primaryColor),),
-                          Text("${authProvider.uploadPercentage.ceil()} %")
-                        ],
-                      )
+                              children: [
+                                const Text("Téléversement des images"),
+                                Text("Image N° ${authProvider.currentUploadingImageCount}", style: TextStyle(color: Theme.of(context).primaryColor),),
+                                Text("${authProvider.uploadPercentage.ceil()} %")
+                              ],
+                            )
                           : Container()
                     ],
                   )
@@ -113,7 +125,7 @@ class ImageCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Consumer<AuthProvider>(
       builder: (context, authProvider, child) => GestureDetector(
-        onTap: () => authProvider.pickImage(index),
+        onTap: () => authProvider.pickImage(index, context),
         child: Stack(
           alignment: Alignment.center,
           children: [

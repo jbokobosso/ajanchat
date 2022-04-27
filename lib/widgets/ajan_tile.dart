@@ -23,8 +23,10 @@ class _AjanTileState extends State<AjanTile> {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      width: MediaQuery.of(context).size.width*0.7,
-      height: MediaQuery.of(context).size.height*0.6,
+      // width: MediaQuery.of(context).size.width*0.7,
+      // height: MediaQuery.of(context).size.height*0.6,
+      width: 300,
+      height: 300,
       child: Swipable(
         onSwipeRight: (Offset offset) {
           Provider.of<HomeProvider>(context, listen: false).likeAjan(context, widget.ajan);
