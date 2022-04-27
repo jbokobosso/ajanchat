@@ -38,65 +38,62 @@ class _HomeTabState extends State<HomeTab> {
           width: double.infinity,
           height: double.infinity,
           decoration: BoxDecoration(image: DecorationImage(image: AssetImage(FileAssets.bg2), fit: BoxFit.cover)),
-          child: Stack(
-            children: [
-              Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 45),
-                    child: ListTile(
-                      leading: GestureDetector(
-                        child: Container(
-                          width: 30.0,
-                          decoration: const BoxDecoration(
-                              shape: BoxShape.circle,
-                              color: Color(0xff51C3FE)
-                          ),
-                          child: Padding(
-                            padding: const EdgeInsets.all(5.0),
-                            child: Image.asset(FileAssets.crownIcon, color: Colors.white),
-                          ),
-                        ),
-                      ),
-                      title: const Text("Passer à Premium", style: TextStyle(color: Color(0xff35667E)),),
-                      subtitle: const Text("Ton crush s'impatiente !", style: TextStyle(color: Color(0xff93B6C6)),),
-                      trailing: GestureDetector(
-                        child: Container(
-                          width: 15.0,
-                          decoration: const BoxDecoration(
-                              shape: BoxShape.circle,
-                              color: Color(0xff51C3FE)
-                          ),
-                          child: Padding(
-                            padding: const EdgeInsets.all(5.0),
-                            child: Image.asset(FileAssets.crossIcon, color: Colors.white),
+          child: homeProvider.isBusy
+              ? const Loading()
+              : Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 45),
+                      child: ListTile(
+                        leading: GestureDetector(
+                          child: Container(
+                            width: 30.0,
+                            decoration: const BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: Color(0xff51C3FE)
+                            ),
+                            child: Padding(
+                              padding: const EdgeInsets.all(5.0),
+                              child: Image.asset(FileAssets.crownIcon, color: Colors.white),
+                            ),
                           ),
                         ),
+                        title: const Text("Passer à Premium", style: TextStyle(color: Color(0xff35667E)),),
+                        subtitle: const Text("Ton crush s'impatiente !", style: TextStyle(color: Color(0xff93B6C6)),),
+                        trailing: GestureDetector(
+                          child: Container(
+                            width: 15.0,
+                            decoration: const BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: Color(0xff51C3FE)
+                            ),
+                            child: Padding(
+                              padding: const EdgeInsets.all(5.0),
+                              child: Image.asset(FileAssets.crossIcon, color: Colors.white),
+                            ),
+                          ),
+                        ),
+                        onTap: () => Utils.showToast("En construction..."),
                       ),
-                      onTap: () => Utils.showToast("En construction..."),
                     ),
-                  ),
-                  Column(
-                    children: Provider.of<HomeProvider>(context).ajanList.map((e) => AjanTile(ajan: e)).toList(),
-                  ),
-                  // Row(
-                  //   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  //   children: [
-                  //     IconButton(
-                  //       onPressed: () => null,
-                  //       icon: Image.asset(FileAssets.crossIcon, color: const Color(0xffFFCB58), width: 17),
-                  //     ),
-                  //     IconButton(
-                  //       icon: const Icon(Icons.favorite, color: Color(0xffFC77A0)),
-                  //       onPressed: () => null,
-                  //     )
-                  //   ],
-                  // )
-                ],
-              ),
-              homeProvider.isBusy ? const Loading() : Container()
-            ],
+                    Stack(
+                      children: Provider.of<HomeProvider>(context).ajanList.map((e) => AjanTile(ajan: e)).toList(),
+                    ),
+                    // Row(
+                    //   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    //   children: [
+                    //     IconButton(
+                    //       onPressed: () => null,
+                    //       icon: Image.asset(FileAssets.crossIcon, color: const Color(0xffFFCB58), width: 17),
+                    //     ),
+                    //     IconButton(
+                    //       icon: const Icon(Icons.favorite, color: Color(0xffFC77A0)),
+                    //       onPressed: () => null,
+                    //     )
+                    //   ],
+                    // )
+                  ],
           )
       )
     );
