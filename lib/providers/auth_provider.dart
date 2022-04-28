@@ -141,6 +141,8 @@ class AuthProvider extends ChangeNotifier {
       "phoneNumber": phoneNumberInput.toString(),
       "resendToken": resendToken.toString()
     };
+    isBusy = false;
+    notifyListeners();
     navigateTo(authBuildContext, RouteNames.otp, arguments: params);
   }
 

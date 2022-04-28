@@ -40,7 +40,7 @@ class _PhonePageState extends State<PhonePage> {
         ),
       ),
       body: Consumer<AuthProvider>(
-        builder: (contex, authProvider, child) => Stack(
+        builder: (context, authProvider, child) => Stack(
           children: [
             CurvedTopBackground(deviceHeight: MediaQuery.of(context).size.height, clipBarSizeScale: topCurvedHeightScale),
             ListView(
