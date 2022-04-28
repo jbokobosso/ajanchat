@@ -550,4 +550,28 @@ class AuthProvider extends ChangeNotifier {
       return true;
     }
   }
+
+  Future<bool> updateProfileName(String newDisplayName) async {
+    bool result = false;
+    isBusy = true;
+    notifyListeners();
+    try {
+      await FirebaseFirestore.instance
+          .collection(Globals.FCN_ajan)
+          .doc(FirebaseAuth.instance.currentUser!.uid)
+          .update({
+        'displayName': newDisplayName
+      });
+      loggedUser.displayName = newDisplayName;
+      result = true;
+    } catch (exception) {
+      result = false;
+      debugPrint(exception.toString());
+    } finally {
+      isBusy = false;
+      notifyListeners();
+    }
+
+    return result;
+  }
 }

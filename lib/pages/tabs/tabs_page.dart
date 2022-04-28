@@ -76,7 +76,9 @@ class _TabsPageState extends State<TabsPage> {
 
   @override
   Future<void> didChangeDependencies() async {
-    await Provider.of<AuthProvider>(context, listen: false).loadLoggedUserFromFirebaseAndNotify();
+    if(Provider.of<AuthProvider>(context).loggedUser == null) {
+      await Provider.of<AuthProvider>(context, listen: false).loadLoggedUserFromFirebaseAndNotify();
+    }
     super.didChangeDependencies();
   }
 }

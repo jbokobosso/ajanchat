@@ -14,6 +14,17 @@ class ProfileTab extends StatefulWidget {
 }
 
 class _ProfileTabState extends State<ProfileTab> {
+
+  GlobalKey<FormState> displayNameFormKey = GlobalKey<FormState>();
+  String firstnameInput = "";
+  String lastnameInput = "";
+
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Consumer<AuthProvider>(
@@ -52,17 +63,83 @@ class _ProfileTabState extends State<ProfileTab> {
                   )
                 ],
               ),
-            ),
+            ),    //Profile banner
             const Divider(),
 
             ListTile(
                 onTap: () {
-                  if(authProvider.loggedUser.displayName == null) {
-                    authProvider.loadLoggedUserFromFirebaseAndNotify();
-                    authProvider.notifyListeners();
-                  } else {
-                    Utils.showToast("Merci, profil déjà chargé...");
-                  }
+                  showDialog(
+                      barrierDismissible: false,
+                      context: context,
+                      builder: (buildContext) => AlertDialog(
+                        content: SizedBox(
+                          height: MediaQuery.of(buildContext).size.height*0.4,
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.spaceAround,
+                            children: [
+                              const Text("Modifier Profil", style: TextStyle(fontSize: 20)),
+                              SizedBox(
+                                width: MediaQuery.of(context).size.width*0.7,
+                                child: Form(
+                                  key: displayNameFormKey,
+                                  child: Column(
+                                    children: [
+                                      TextFormField(
+                                        initialValue: authProvider.loggedUser.displayName!.split(" ").first,
+                                        onSaved: (value) => firstnameInput = value!.trim(),
+                                        decoration: const InputDecoration(
+                                            label: Text("Prénom"),
+                                            suffixIcon: Icon(Icons.account_circle),
+                                            border: OutlineInputBorder(
+                                                borderSide: BorderSide(
+                                                    color: Colors.deepPurple,
+                                                    width: 5.0,
+                                                    style: BorderStyle.solid
+                                                )
+                                            )
+                                        ),
+                                      ),
+                                      const SizedBox(height: 20),
+                                      TextFormField(
+                                        initialValue: authProvider.loggedUser.displayName!.split(" ")[1],
+                                        onSaved: (value) => lastnameInput = value!.trim(),
+                                        decoration: const InputDecoration(
+                                            label: Text("Nom"),
+                                            suffixIcon: Icon(Icons.account_circle),
+                                            border: OutlineInputBorder(
+                                                borderSide: BorderSide(
+                                                    color: Colors.deepPurple,
+                                                    width: 5.0,
+                                                    style: BorderStyle.solid
+                                                )
+                                            )
+                                        ),
+                                      )
+                                    ],
+                                  ),
+                                ),
+                              )
+                            ],
+                          ),
+                        ),
+                        actions: authProvider.isBusy
+                            ? [const CircularProgressIndicator()]
+                            : [
+                                TextButton(
+                                  onPressed: Navigator.of(context).pop,
+                                  child: const Text("Annuler"),
+                                ),
+                                TextButton(
+                                  onPressed: () async {
+                                    displayNameFormKey.currentState!.save();
+                                    bool result = await authProvider.updateProfileName("$firstnameInput ${lastnameInput.toUpperCase()}");
+                                    if(result) Navigator.pop(context);
+                                  },
+                                  child: const Text("Modifier"),
+                                )
+                              ],
+                      )
+                  );
                 },
                 leading: const Icon(Icons.account_circle),
                 title: const Text("Profil"),
