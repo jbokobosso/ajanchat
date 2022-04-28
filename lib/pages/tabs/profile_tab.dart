@@ -148,7 +148,7 @@ class _ProfileTabState extends State<ProfileTab> {
                 leading: const Icon(Icons.account_circle),
                 title: const Text("Profil"),
                 subtitle: Text(
-                  authProvider.loggedUser.displayName ?? "Tapez pour charger votre profil",
+                  authProvider.loggedUser.displayName ?? "Erreur lors du chargement du profil",
                   style: TextStyle(color: authProvider.loggedUser.displayName == null ? Theme.of(context).primaryColor : Colors.grey),
                 )
             ),
