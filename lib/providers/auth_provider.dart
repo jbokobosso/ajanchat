@@ -83,6 +83,19 @@ class AuthProvider extends ChangeNotifier {
   bool isLoggingOut = false;
   int currentUploadingImageCount = 1;
 
+  setPreferences(List<dynamic> newStringPrefs) {
+    for(dynamic newPref in newStringPrefs) {
+      int i=0;
+      for(PreferenceModel preferenceModel in preferences) {
+        if(preferenceModel.label == newPref.toString()) {
+          preferences[i].isChosen = true;
+        }
+        i++;
+      }
+    }
+    print(preferences);
+    notifyListeners();
+  }
 
   void onRegisterFormSaved(BuildContext context) async {
     isBusy = true;
@@ -382,6 +395,27 @@ class AuthProvider extends ChangeNotifier {
     Navigator.of(context).pushNamed(RouteNames.pictures);
     if (kDebugMode) {
       print(signupAjan);
+    }
+  }
+
+  Future<void> onUpdatePreferences(BuildContext context) async {
+    isBusy = true;
+    notifyListeners();
+    try {
+      List<dynamic> newPreferencesList = preferences.where((element) => element.isChosen == true).map((e) => e.label).toList();
+      await FirebaseFirestore.instance
+          .collection(Globals.FCN_ajan)
+          .doc(FirebaseAuth.instance.currentUser!.uid)
+          .update({
+        'preferences': newPreferencesList
+      });
+      loadLoggedUserFromFirebaseAndNotify();
+      Navigator.pop(context);
+    } catch(e) {
+      rethrow;
+    } finally {
+      isBusy = false;
+      notifyListeners();
     }
   }
 
