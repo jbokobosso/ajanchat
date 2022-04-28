@@ -18,6 +18,7 @@ class _ProfileTabState extends State<ProfileTab> {
   GlobalKey<FormState> displayNameFormKey = GlobalKey<FormState>();
   String firstnameInput = "";
   String lastnameInput = "";
+  DateTime birthdateInput = DateTime.now();
 
 
   @override
@@ -171,9 +172,23 @@ class _ProfileTabState extends State<ProfileTab> {
             const ListTile(leading: Icon(Icons.camera_alt_outlined), title: Text("Modifier Mes Photos")),
             const Divider(),
 
-            ListTile(
+            authProvider.isBusy
+                ? const CircularProgressIndicator()
+                : ListTile(
+              onTap: () => showDatePicker(
+                context: context,
+                initialDate: authProvider.loggedUser.birthDate,
+                firstDate: DateTime.now().subtract(const Duration(days: Globals.minimumAgeInDays)),
+                lastDate: DateTime.now().subtract(const Duration(days: Globals.maximumAgeInDays)),
+              ).then((DateTime? pickedDate) {
+                if(pickedDate == null)  {
+                  Utils.showToast("Annulé !");
+                } else {
+                  authProvider.updateBirthdate(pickedDate);
+                }
+              }),
               leading: const Icon(Icons.baby_changing_station),
-              title: const Text("Date d'anniversaire"),
+              title: const Text("Date de naissance"),
               subtitle: Text(Utils.formatDateToHuman(authProvider.loggedUser.birthDate))
             ),
             const Divider(),

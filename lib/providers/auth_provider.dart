@@ -574,4 +574,28 @@ class AuthProvider extends ChangeNotifier {
 
     return result;
   }
+
+  Future<bool> updateBirthdate(DateTime newBirthdate) async {
+    bool result = false;
+    isBusy = true;
+    notifyListeners();
+    try {
+      await FirebaseFirestore.instance
+          .collection(Globals.FCN_ajan)
+          .doc(FirebaseAuth.instance.currentUser!.uid)
+          .update({
+            'birthDate': newBirthdate
+          });
+      loggedUser.birthDate = newBirthdate;
+      result = true;
+    } catch (exception) {
+      result = false;
+      debugPrint(exception.toString());
+    } finally {
+      isBusy = false;
+      notifyListeners();
+    }
+
+    return result;
+  }
 }
