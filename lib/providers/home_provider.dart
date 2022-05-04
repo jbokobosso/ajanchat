@@ -7,8 +7,10 @@ import 'package:ajanchat/providers/auth_provider.dart';
 import 'package:ajanchat/utils/utils.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -29,6 +31,15 @@ class HomeProvider extends ChangeNotifier {
         .doc(FirebaseAuth.instance.currentUser!.uid)
         .get();
     return AjanModel.fromMap(result.data()!, result.id);
+  }
+
+  getAjanListImages(String ajanUid)  async {
+    List<dynamic> imagesDownloadUrls = [];
+    ListResult listResult = await FirebaseStorage.instance.ref(Globals.FSN_profile_pictures).child(ajanUid).list();
+    for (var element in listResult.items) {
+      imagesDownloadUrls.add(await element.getDownloadURL());
+    }
+    return imagesDownloadUrls;
   }
 
   getAjanList() async {
@@ -57,6 +68,9 @@ class HomeProvider extends ChangeNotifier {
         );
       }
       ajanList = ajanListTemp;
+      for(AjanModel ajan in ajanList) {
+        ajan.images = await getAjanListImages(ajan.id);
+      }
       if(data.docs.isNotEmpty) lastReadAjan = data.docs.last;
     } catch(exception) {
       rethrow;
@@ -94,6 +108,9 @@ class HomeProvider extends ChangeNotifier {
         );
       }
       ajanList = ajanListTemp;
+      for(AjanModel ajan in ajanList) {
+        ajan.images = await getAjanListImages(ajan.id);
+      }
     } catch(exception) {
       rethrow;
     } finally {

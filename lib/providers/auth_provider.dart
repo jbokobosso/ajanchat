@@ -78,13 +78,17 @@ class AuthProvider extends ChangeNotifier {
   GlobalKey<FormState> infosFormKey = GlobalKey<FormState>();
   double uploadPercentage = 0;
   bool isUploading = false;
-  List<String> uploadedDownloadUrls = [];
   bool isLocating = false;
   bool isLoggingOut = false;
   int currentUploadingImageCount = 1;
 
-  downloadLoggedUserImages() {
-
+  getAjanListImages(String ajanUid)  async {
+    List<dynamic> imagesDownloadUrls = [];
+    ListResult listResult = await FirebaseStorage.instance.ref(Globals.FSN_profile_pictures).child(ajanUid).list();
+    for (var element in listResult.items) {
+      imagesDownloadUrls.add(await element.getDownloadURL());
+    }
+    return imagesDownloadUrls;
   }
 
   setImages(List<dynamic> existingNetworkImages) {
@@ -455,7 +459,6 @@ class AuthProvider extends ChangeNotifier {
     var networkFilledCount = images.length - signupAjan.images.length;
     // uploadProfilePictures(alreadyFilledCount: networkFilledCount);
     await uploadUpdatedProfilePictures();
-    await updateImagesNames();
   }
 
   void onPicturesFormSaved(BuildContext context) {
@@ -474,11 +477,7 @@ class AuthProvider extends ChangeNotifier {
       await uploadProfilePictures();
       storeUserOnFirebase();
       await markUserLogged();
-      if(kDebugMode) {
-        Navigator.of(context).pushNamed(RouteNames.tabs);
-      } else {
-        Navigator.of(context).pushNamedAndRemoveUntil(RouteNames.tabs, (route) => false);
-      }
+      Navigator.of(context).pushNamedAndRemoveUntil(RouteNames.tabs, (route) => false);
     } catch(exception) {
       rethrow;
     } finally {
@@ -512,19 +511,20 @@ class AuthProvider extends ChangeNotifier {
       FirebaseStorage.instance
           .ref(Globals.FSN_profile_pictures)
           .child(FirebaseAuth.instance.currentUser!.uid)
-          .delete();
+          .delete()
+          .then((value) => Utils.showToast("Images supprimées"));
       FirebaseFirestore.instance
           .collection(Globals.FCN_ajan)
           .doc(FirebaseAuth.instance.currentUser!.uid)
           .delete()
           .then((value) async {
-        FirebaseAuth.instance.signOut();
-        loggedUser = defaultUser;
-        SharedPreferences prefs = await SharedPreferences.getInstance();
-        prefs.setBool(Globals.S_isLogged, false);
-        Navigator.of(buildContext).pushNamedAndRemoveUntil(RouteNames.auth, (route) => false);
-        Utils.showToast("Compte supprimé !");
-      });
+            FirebaseAuth.instance.signOut();
+            loggedUser = defaultUser;
+            SharedPreferences prefs = await SharedPreferences.getInstance();
+            prefs.setBool(Globals.S_isLogged, false);
+            Navigator.of(buildContext).pushNamedAndRemoveUntil(RouteNames.auth, (route) => false);
+            Utils.showToast("Compte supprimé !");
+          });
     } catch(exception) {
       rethrow;
     } finally {
@@ -547,8 +547,9 @@ class AuthProvider extends ChangeNotifier {
     FirebaseFirestore.instance.collection(Globals.FCN_ajan)
         .doc(FirebaseAuth.instance.currentUser!.uid)
         .get()
-        .then((value) {
+        .then((value) async {
       loggedUser = AjanModel.fromMap(value.data()!, value.id);
+      loggedUser.images = await getAjanListImages(FirebaseAuth.instance.currentUser!.uid);
       Utils.showToast("Utilisateur chargé");
       notifyListeners();
     });
@@ -579,7 +580,6 @@ class AuthProvider extends ChangeNotifier {
     // It also initializes the concerned arrays as filter based on them must not be with empty array
     signupAjan.dislikedAjanList.add(FirebaseAuth.instance.currentUser!.uid);
     signupAjan.likedAjanList.add(FirebaseAuth.instance.currentUser!.uid);
-    signupAjan.images = uploadedDownloadUrls;
     FirebaseFirestore
         .instance
         .collection(Globals.FCN_ajan)
@@ -589,7 +589,6 @@ class AuthProvider extends ChangeNotifier {
 
   Future<void> uploadProfilePictures() async {
     currentUploadingImageCount = 1; // initialize in case it's called multiple times
-    uploadedDownloadUrls = []; // erase data for multiple uploads (in dev mode)
     for (var imagePath in signupAjan.images) {
       isUploading = true;
       Stream<TaskSnapshot> taskStream = FirebaseStorage.instance
@@ -604,7 +603,6 @@ class AuthProvider extends ChangeNotifier {
         uploadPercentage = (taskSnapshot.bytesTransferred*100)/taskSnapshot.totalBytes;
         notifyListeners();
         if(uploadPercentage == 100) {
-          uploadedDownloadUrls.add(await taskSnapshot.ref.getDownloadURL());
           break;
         }
       }
@@ -618,7 +616,6 @@ class AuthProvider extends ChangeNotifier {
 
   Future<void> uploadUpdatedProfilePictures() async {
     currentUploadingImageCount = 1; // initialize in case it's called multiple times
-    uploadedDownloadUrls = []; // erase data for multiple uploads (in dev mode)
     for (ImageCardModel imageCardModel in images) {
       if(imageCardModel.isFilled && imageCardModel.networkImage.isEmpty) {
         isUploading = true;
@@ -634,7 +631,6 @@ class AuthProvider extends ChangeNotifier {
           notifyListeners();
           if(uploadPercentage == 100) {
             String uploadedUrl = await taskSnapshot.ref.getDownloadURL();
-            uploadedDownloadUrls.add(uploadedUrl);
             break;
           }
         }
@@ -647,15 +643,6 @@ class AuthProvider extends ChangeNotifier {
       }
       currentUploadingImageCount++; // even if an image is skipped, count anyway so that naming will work
     }
-  }
-
-  Future<void> updateImagesNames() async {
-    FirebaseFirestore.instance
-        .collection(Globals.FCN_ajan)
-        .doc(FirebaseAuth.instance.currentUser!.uid)
-        .update(
-          {"images" : FieldValue.arrayUnion(uploadedDownloadUrls)}
-        );
   }
 
   bool genderPageIsValid(BuildContext context) {
