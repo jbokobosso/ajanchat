@@ -1,5 +1,5 @@
 import 'dart:ui';
-
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:ajanchat/models/ajan_model.dart';
 import 'package:ajanchat/providers/home_provider.dart';
 import 'package:ajanchat/utils/utils.dart';
@@ -41,7 +41,17 @@ class _AjanTileState extends State<AjanTile> {
               borderRadius: BorderRadius.circular(25),
               child: ListView(
                 padding: EdgeInsets.zero,
-                children: widget.ajan.images.map((image) => Image.network(image, fit: BoxFit.cover)).toList(),
+                // children: widget.ajan.images.map((image) => Image.network(image, fit: BoxFit.cover)).toList(),
+                children: widget.ajan.images.map((image) => CachedNetworkImage(
+                  fit: BoxFit.cover,
+                  imageUrl: image,
+                  progressIndicatorBuilder: (context, url, downloadProgress) => SizedBox(
+                    child: CircularProgressIndicator(value: downloadProgress.progress),
+                    height: 50.0,
+                    width: 50.0,
+                  ),
+                  errorWidget: (context, url, error) => const Icon(Icons.error),
+                )).toList(),
               ),
             ),
             SizedBox(

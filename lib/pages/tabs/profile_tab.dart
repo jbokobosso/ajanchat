@@ -3,6 +3,7 @@ import 'package:ajanchat/constants/globals.dart';
 import 'package:ajanchat/constants/routes.dart';
 import 'package:ajanchat/providers/auth_provider.dart';
 import 'package:ajanchat/utils/utils.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 import 'package:provider/provider.dart';
@@ -43,7 +44,10 @@ class _ProfileTabState extends State<ProfileTab> {
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
                   authProvider.loggedUser.images.isNotEmpty
-                      ? CircleAvatar(backgroundImage: NetworkImage(authProvider.loggedUser.images.first as String), radius: MediaQuery.of(context).size.width*0.10)
+                      ? CircleAvatar(
+                          backgroundImage: CachedNetworkImageProvider(authProvider.loggedUser.images.first as String),
+                          radius: MediaQuery.of(context).size.width*0.10
+                        )
                       : const SizedBox(),
                   Padding(
                     padding: const EdgeInsets.only(left: 20.0),
