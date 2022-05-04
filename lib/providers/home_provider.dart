@@ -76,7 +76,7 @@ class HomeProvider extends ChangeNotifier {
       rethrow;
     } finally {
       isBusy = false;
-      notifyListeners();
+      // notifyListeners();
       if(ajanList.isEmpty) Utils.showToast("Base de donnée vide!");
     }
   }

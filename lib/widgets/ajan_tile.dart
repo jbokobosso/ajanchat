@@ -1,11 +1,11 @@
 import 'dart:ui';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:ajanchat/models/ajan_model.dart';
 import 'package:ajanchat/providers/home_provider.dart';
 import 'package:ajanchat/utils/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_swipable/flutter_swipable.dart';
 import 'package:provider/provider.dart';
+import 'package:shimmer_image/shimmer_image.dart';
 
 class AjanTile extends StatefulWidget {
   final AjanModel ajan;
@@ -42,15 +42,13 @@ class _AjanTileState extends State<AjanTile> {
               child: ListView(
                 padding: EdgeInsets.zero,
                 // children: widget.ajan.images.map((image) => Image.network(image, fit: BoxFit.cover)).toList(),
-                children: widget.ajan.images.map((image) => CachedNetworkImage(
-                  fit: BoxFit.cover,
-                  imageUrl: image,
-                  progressIndicatorBuilder: (context, url, downloadProgress) => SizedBox(
-                    child: CircularProgressIndicator(value: downloadProgress.progress),
-                    height: 50.0,
-                    width: 50.0,
-                  ),
-                  errorWidget: (context, url, error) => const Icon(Icons.error),
+                children: widget.ajan.images.map((image) => ProgressiveImage(
+                  image: image,
+                  width: 300.0,
+                  height: 300.0,
+                  baseColor: Colors.white,
+                  highlightColor: const Color.fromRGBO(255, 116, 198, 0.05),
+                  imageError: "Pas de connexion",
                 )).toList(),
               ),
             ),
