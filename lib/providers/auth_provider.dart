@@ -83,6 +83,28 @@ class AuthProvider extends ChangeNotifier {
   bool isLoggingOut = false;
   int currentUploadingImageCount = 1;
 
+  downloadLoggedUserImages() {
+
+  }
+
+  setImages(List<dynamic> existingNetworkImages) {
+    int i=0;
+    int j=0;
+    for(dynamic image in images) {
+      images[j].networkImage = "";
+      j++;
+    }
+
+    for(dynamic networkImage in existingNetworkImages) {
+      images[i].networkImage = networkImage;
+      i++;
+    }
+    if (kDebugMode) {
+      print(images);
+    }
+    notifyListeners();
+  }
+
   setPreferences(List<dynamic> newStringPrefs) {
     for(dynamic newPref in newStringPrefs) {
       int i=0;
@@ -93,7 +115,9 @@ class AuthProvider extends ChangeNotifier {
         i++;
       }
     }
-    print(preferences);
+    if (kDebugMode) {
+      print(preferences);
+    }
     notifyListeners();
   }
 
@@ -260,6 +284,7 @@ class AuthProvider extends ChangeNotifier {
   }
 
   Future<void> pickImage(int index, BuildContext buildContext) async {
+
     pickFile(ImageSource imageSource) async {
       final pickedFile = await picker.getImage(source: imageSource, maxWidth: 300, maxHeight: 300);
       if (pickedFile != null) {
@@ -308,6 +333,8 @@ class AuthProvider extends ChangeNotifier {
           ),
         )
     );
+
+
     // final pickedFile = await picker.getImage(source: ImageSource.gallery);
     // if (pickedFile != null) {
     //   images[index].image = File(pickedFile.path);
@@ -322,6 +349,7 @@ class AuthProvider extends ChangeNotifier {
   void clearPictures(int index) {
     images[index].isFilled = false;
     images[index].image = File("");
+    images[index].networkImage = "";
     notifyListeners();
   }
 
@@ -419,6 +447,17 @@ class AuthProvider extends ChangeNotifier {
     }
   }
 
+  Future<void> onUpdatePicturesFormSaved(BuildContext context) async {
+    signupAjan.images = images.where((element) => element.isFilled == true && element.networkImage.isEmpty).map((e) => e.image.path).toList();
+    if (kDebugMode) {
+      print(signupAjan);
+    }
+    var networkFilledCount = images.length - signupAjan.images.length;
+    // uploadProfilePictures(alreadyFilledCount: networkFilledCount);
+    await uploadUpdatedProfilePictures();
+    await updateImagesNames();
+  }
+
   void onPicturesFormSaved(BuildContext context) {
     signupAjan.images = images.where((element) => element.isFilled == true).map((e) => e.image.path).toList();
     if (kDebugMode) {
@@ -470,6 +509,10 @@ class AuthProvider extends ChangeNotifier {
     isLoggingOut = true;
     notifyListeners();
     try {
+      FirebaseStorage.instance
+          .ref(Globals.FSN_profile_pictures)
+          .child(FirebaseAuth.instance.currentUser!.uid)
+          .delete();
       FirebaseFirestore.instance
           .collection(Globals.FCN_ajan)
           .doc(FirebaseAuth.instance.currentUser!.uid)
@@ -552,7 +595,7 @@ class AuthProvider extends ChangeNotifier {
       Stream<TaskSnapshot> taskStream = FirebaseStorage.instance
           .ref(Globals.FSN_profile_pictures)
           .child(FirebaseAuth.instance.currentUser!.uid)
-          .child(imagePath.split("/").last)
+          .child( "$currentUploadingImageCount.${imagePath.split("/").last.toString().split('.').last}" )
           .putFile(File(imagePath))
           .snapshotEvents;
 
@@ -571,6 +614,48 @@ class AuthProvider extends ChangeNotifier {
       Utils.showToast("Image ${currentUploadingImageCount} téléversée !");
       currentUploadingImageCount++;
     }
+  }
+
+  Future<void> uploadUpdatedProfilePictures() async {
+    currentUploadingImageCount = 1; // initialize in case it's called multiple times
+    uploadedDownloadUrls = []; // erase data for multiple uploads (in dev mode)
+    for (ImageCardModel imageCardModel in images) {
+      if(imageCardModel.isFilled && imageCardModel.networkImage.isEmpty) {
+        isUploading = true;
+        Stream<TaskSnapshot> taskStream = FirebaseStorage.instance
+            .ref(Globals.FSN_profile_pictures)
+            .child(FirebaseAuth.instance.currentUser!.uid)
+            .child( "$currentUploadingImageCount.${imageCardModel.image.path.split("/").last.toString().split('.').last}")
+            .putFile(imageCardModel.image)
+            .snapshotEvents;
+
+        await for (TaskSnapshot taskSnapshot in taskStream) {
+          uploadPercentage = (taskSnapshot.bytesTransferred*100)/taskSnapshot.totalBytes;
+          notifyListeners();
+          if(uploadPercentage == 100) {
+            String uploadedUrl = await taskSnapshot.ref.getDownloadURL();
+            uploadedDownloadUrls.add(uploadedUrl);
+            break;
+          }
+        }
+
+        isUploading = false;
+        notifyListeners();
+        Utils.showToast("Image $currentUploadingImageCount téléversée !");
+
+
+      }
+      currentUploadingImageCount++; // even if an image is skipped, count anyway so that naming will work
+    }
+  }
+
+  Future<void> updateImagesNames() async {
+    FirebaseFirestore.instance
+        .collection(Globals.FCN_ajan)
+        .doc(FirebaseAuth.instance.currentUser!.uid)
+        .update(
+          {"images" : FieldValue.arrayUnion(uploadedDownloadUrls)}
+        );
   }
 
   bool genderPageIsValid(BuildContext context) {

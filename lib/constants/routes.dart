@@ -6,6 +6,7 @@ import 'package:ajanchat/pages/auth/phone_page.dart';
 import 'package:ajanchat/pages/auth/pictures_page.dart';
 import 'package:ajanchat/pages/auth/preferences_page.dart';
 import 'package:ajanchat/pages/auth/register_page.dart';
+import 'package:ajanchat/pages/profile/update_pictures_page.dart';
 import 'package:ajanchat/pages/profile/update_preferences_page.dart';
 import 'package:ajanchat/pages/startup/startup_page.dart';
 import 'package:ajanchat/pages/tabs/chat/single_chat_page.dart';
@@ -27,6 +28,7 @@ class RouteNames {
   static String tabs = "/tabs";
   static String singleChat = "/singleChat";
   static String updatePreferences = "/updatePreferences";
+  static String updatePictures = "/updatePictures";
 }
 
 Map<String, Widget Function(BuildContext)> routes = <String, WidgetBuilder> {
@@ -43,4 +45,5 @@ Map<String, Widget Function(BuildContext)> routes = <String, WidgetBuilder> {
   RouteNames.tabs : (BuildContext context) => const TabsPage(),
   RouteNames.singleChat : (BuildContext context) => const SingleChatPage(),
   RouteNames.updatePreferences : (BuildContext context) => const UpdatePreferencesPage(),
+  RouteNames.updatePictures : (BuildContext context) => const UpdatePicturesPage(),
 };

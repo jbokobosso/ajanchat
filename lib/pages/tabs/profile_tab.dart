@@ -175,7 +175,14 @@ class _ProfileTabState extends State<ProfileTab> {
             ),
             const Divider(),
 
-            const ListTile(leading: Icon(Icons.camera_alt_outlined), title: Text("Modifier Mes Photos")),
+            ListTile(
+              onTap: () {
+                authProvider.setImages(authProvider.loggedUser.images);
+                Navigator.of(context).pushNamed(RouteNames.updatePictures);
+              },
+              leading: Icon(Icons.camera_alt_outlined),
+              title: Text("Modifier Mes Photos")
+            ),
             const Divider(),
 
             authProvider.isBusy
