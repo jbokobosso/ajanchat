@@ -13,27 +13,27 @@ class CustomAppBar extends StatelessWidget with PreferredSizeWidget {
   Widget build(BuildContext context) {
 
     return AppBar(
-      title: const Text('Ajan Chat', style: TextStyle(color: Colors.black, fontWeight: FontWeight.w900)),
+      centerTitle: true,
+      title: const Text('Ajan Chat', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w900)),
       flexibleSpace: ClipPath(
         clipper: TopClipper(),
-        child: Container(color: Colors.white),
+        child: Container(color: Theme.of(context).accentColor),
       ),
       backgroundColor: Colors.transparent,
       elevation: 0.0,
       actions: [
-        IconButton(icon: SvgPicture.asset('assets/icons/notification.svg'), onPressed: () => null),
         PopupMenuButton(
-          child: SvgPicture.asset('assets/icons/options.svg', width: 33,),
+          child: SvgPicture.asset('assets/icons/options.svg', width: 33, color: Colors.white),
           itemBuilder: (BuildContext context) {
             return [
               PopupMenuItem(
                 child: TextButton(
-                  onPressed: () => null,
+                  onPressed: () {  },
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
                       SvgPicture.asset('assets/icons/invite.svg', width: 20),
-                      Text('Inviter des amis ', style: this.popStyle,)
+                      Text('Inviter des amis ', style: popStyle,)
                     ],
                   ),
                 ),
@@ -60,5 +60,5 @@ class CustomAppBar extends StatelessWidget with PreferredSizeWidget {
   }
 
   @override
-  Size get preferredSize => const Size.fromHeight(50.0);
+  Size get preferredSize => const Size.fromHeight(100.0);
 }

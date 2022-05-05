@@ -35,7 +35,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primaryColor: const Color(0xffDF25AB),
         accentColor: const Color(0xff19516F),
-        primarySwatch: Colors.pink
+        primarySwatch: Colors.blue,
       ),
       routes: routes,
       initialRoute: RouteNames.startup,

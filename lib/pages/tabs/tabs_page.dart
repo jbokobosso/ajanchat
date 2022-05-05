@@ -1,10 +1,12 @@
 import 'package:ajanchat/constants/file_assets.dart';
+import 'package:ajanchat/constants/globals.dart';
 import 'package:ajanchat/pages/tabs/chat/chat_tab.dart';
 import 'package:ajanchat/pages/tabs/home_tab.dart';
 import 'package:ajanchat/pages/tabs/profile_tab.dart';
 import 'package:ajanchat/pages/tabs/settings_tab.dart';
 import 'package:ajanchat/providers/auth_provider.dart';
 import 'package:ajanchat/providers/chat_provider.dart';
+import 'package:ajanchat/widgets/custom_app_bar.dart';
 import 'package:ajanchat/widgets/otp.dart';
 import 'package:animated_bottom_navigation_bar/animated_bottom_navigation_bar.dart';
 import 'package:badges/badges.dart';
@@ -43,19 +45,14 @@ class _TabsPageState extends State<TabsPage> {
 
     return Scaffold(
       extendBodyBehindAppBar: true,
-      appBar: AppBar(
-        elevation: 0,
-        backgroundColor: Colors.transparent,
-        // leading: IconButton(
-        //   icon: SvgPicture.asset(FileAssets.backArrowIcon),
-        //   onPressed: () => Navigator.of(context).pop(),
-        // ),
+      appBar: CustomAppBar(
+
       ),
       body: Consumer<AuthProvider>(builder: (context, authProvider, child) => navigationTabs[authProvider.currentTabIndex]),
-      floatingActionButton: FloatingActionButton(
-        backgroundColor: const Color(0xff51C3FE),
-        onPressed: () {  },
-        child: Text(Provider.of<ChatProvider>(context).chats.length.toString()),
+      floatingActionButton: Badge(
+        badgeColor: Colors.blue,
+        badgeContent: Text(Provider.of<ChatProvider>(context).chats.length.toString(), style: const TextStyle(color: Colors.white)),
+        child: Icon(Icons.favorite, size: 35, color: Theme.of(context).primaryColor,)
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       bottomNavigationBar: Consumer<AuthProvider>(
