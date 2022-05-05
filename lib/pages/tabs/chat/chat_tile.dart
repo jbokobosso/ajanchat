@@ -21,7 +21,7 @@ class _ChatTileState extends State<ChatTile> {
       title: Text(widget.chatContent.username ?? "", style: const TextStyle(color: Colors.black, fontWeight: FontWeight.bold)),
       leading: Stack(
         children: [
-          CircleAvatar(backgroundImage: AssetImage(widget.chatContent.assetImage ?? "")),
+          CircleAvatar(backgroundImage: NetworkImage(widget.chatContent.assetImage ?? "")),
           widget.chatContent.isOnline == true ? Positioned(
             bottom: -1,
             right: -1,

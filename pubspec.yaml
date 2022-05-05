@@ -46,6 +46,7 @@ dependencies:
   firebase_auth: ^3.3.4
 
   # UI facilities
+  badges: ^2.0.2
   shimmer_image: ^0.0.2
   cached_network_image: ^3.2.0
   intl_phone_number_input: ^0.7.0+2

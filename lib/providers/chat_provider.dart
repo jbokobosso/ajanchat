@@ -1,23 +1,57 @@
+import 'package:ajanchat/constants/globals.dart';
 import 'package:ajanchat/models/ChatTileModel.dart';
 import 'package:ajanchat/models/ERelationType.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/foundation.dart';
+import 'package:ajanchat/models/ajan_model.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter/material.dart';
 
 class ChatProvider extends ChangeNotifier {
 
-  List<ChatTileModel> chats = [
-    ChatTileModel(username: "Aristide Karbou", lastMessage: "comment tu vas ?", lastMessageTime: DateTime.now(), unreadCount: 15, assetImage: "assets/images/person-3.jpg", isOnline: true, relationType: ERelationType.flirt),
-    ChatTileModel(username: "Bineta Rasmane", lastMessage: "hellow world ?", lastMessageTime: DateTime.now(), unreadCount: 3, assetImage: "assets/images/person-2.jpg", relationType: ERelationType.flirt),
-    ChatTileModel(username: "Mamadou Ouegraogo", lastMessage: "salut b ?", lastMessageTime: DateTime.now(), unreadCount: 150, assetImage: "assets/images/person-3.jpg", isOnline: true, relationType: ERelationType.flirt),
-    ChatTileModel(username: "Ama KWATCHA", lastMessage: "nick ta mère 😪 ?", lastMessageTime: DateTime.now(), unreadCount: 5, assetImage: "assets/images/person-4.jpg", relationType: ERelationType.serious),
-    ChatTileModel(username: "John Doe", lastMessage: "comment tu vas ?", lastMessageTime: DateTime.now(), unreadCount: 0, assetImage: "assets/images/person-3.jpg", relationType: ERelationType.friend),
-    ChatTileModel(username: "Gloria", lastMessage: "comment tu vas ?", lastMessageTime: DateTime.now(), unreadCount: 15, assetImage: "assets/images/person-1.jpg", isOnline: true, relationType: ERelationType.serious),
-    ChatTileModel(username: "Constance", lastMessage: "comment tu vas ?", lastMessageTime: DateTime.now(), unreadCount: 1, assetImage: "assets/images/person-1.jpg", relationType: ERelationType.friend),
-  ];
-
+  late Stream<QuerySnapshot<Map<String, dynamic>>> streamData;
+  List<ChatTileModel> chats = [];
   TextEditingController chatController = TextEditingController();
 
   notifyForInputChange() {
     notifyListeners();
+  }
+
+  loadChats() async {
+    if(chats.isEmpty) {
+      streamData = FirebaseFirestore.instance
+          .collection(Globals.FCN_ajan)
+          .where("id", isNotEqualTo: FirebaseAuth.instance.currentUser!.uid)
+          .where(Globals.FDP_likedAjanList, arrayContains: FirebaseAuth.instance.currentUser!.uid)
+          .snapshots();
+
+      streamData.listen((QuerySnapshot<Map<String, dynamic>> queryDocumentSnapshotEvent) async {
+        List<ChatTileModel> chatTileList = [];
+        for (QueryDocumentSnapshot<Map<String, dynamic>> queryDocumentSnapshot in queryDocumentSnapshotEvent.docs) {
+          AjanModel ajanModel = AjanModel.fromMap(queryDocumentSnapshot.data(), queryDocumentSnapshot.id);
+          List<dynamic> ajanImages = await getAjanListImages(queryDocumentSnapshot.id);
+          var tempChatTile = ChatTileModel(
+              username: ajanModel.displayName,
+              lastMessage: "Hello world !",
+              unreadCount: 0,
+              lastMessageTime: DateTime.now(),
+              assetImage: ajanImages.first,
+              relationType: ajanModel.relationPreferences!.relationType
+          );
+          chatTileList.add(tempChatTile);
+        }
+        chats = chatTileList;
+        notifyListeners();
+      });
+    }
+  }
+
+  Future<List<dynamic>> getAjanListImages(String ajanUid)  async {
+    List<dynamic> imagesDownloadUrls = [];
+    ListResult listResult = await FirebaseStorage.instance.ref(Globals.FSN_profile_pictures).child(ajanUid).list();
+    for (var element in listResult.items) {
+      imagesDownloadUrls.add(await element.getDownloadURL());
+    }
+    return imagesDownloadUrls;
   }
 }

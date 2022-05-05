@@ -4,8 +4,10 @@ import 'package:ajanchat/pages/tabs/home_tab.dart';
 import 'package:ajanchat/pages/tabs/profile_tab.dart';
 import 'package:ajanchat/pages/tabs/settings_tab.dart';
 import 'package:ajanchat/providers/auth_provider.dart';
+import 'package:ajanchat/providers/chat_provider.dart';
 import 'package:ajanchat/widgets/otp.dart';
 import 'package:animated_bottom_navigation_bar/animated_bottom_navigation_bar.dart';
+import 'package:badges/badges.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
@@ -50,11 +52,11 @@ class _TabsPageState extends State<TabsPage> {
         // ),
       ),
       body: Consumer<AuthProvider>(builder: (context, authProvider, child) => navigationTabs[authProvider.currentTabIndex]),
-      // floatingActionButton: FloatingActionButton(
-      //   onPressed: () => null,
-      //   backgroundColor: const Color(0xff51C3FE),
-      //   child: Image.asset(FileAssets.thunderIcon, color: Colors.white, width: 15),
-      // ),
+      floatingActionButton: FloatingActionButton(
+        backgroundColor: const Color(0xff51C3FE),
+        onPressed: () {  },
+        child: Text(Provider.of<ChatProvider>(context).chats.length.toString()),
+      ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       bottomNavigationBar: Consumer<AuthProvider>(
         builder: (context, authProvider, child) => AnimatedBottomNavigationBar(
@@ -79,6 +81,7 @@ class _TabsPageState extends State<TabsPage> {
     if(Provider.of<AuthProvider>(context).loggedUser.displayName == null || Provider.of<AuthProvider>(context).loggedUser.displayName!.isEmpty) {
       await Provider.of<AuthProvider>(context, listen: false).loadLoggedUserFromFirebaseAndNotify();
     }
+    Provider.of<ChatProvider>(context, listen: false).loadChats();
     super.didChangeDependencies();
   }
 }

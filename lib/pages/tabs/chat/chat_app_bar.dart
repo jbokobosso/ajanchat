@@ -50,7 +50,7 @@ class ChatAppBar extends StatelessWidget with PreferredSizeWidget {
         children: [
           Stack(
             children: [
-              CircleAvatar(backgroundImage: AssetImage(chatContent.assetImage ?? "")),
+              CircleAvatar(backgroundImage: NetworkImage(chatContent.assetImage ?? "")),
               chatContent.isOnline == true ? Positioned(
                 bottom: -1,
                 right: -1,
