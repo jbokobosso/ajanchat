@@ -1,5 +1,8 @@
+import 'dart:async';
+
 import 'package:ajanchat/constants/file_assets.dart';
-import 'package:ajanchat/models/ajan_model.dart';
+import 'package:ajanchat/widgets/offline.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:ajanchat/providers/auth_provider.dart';
 import 'package:ajanchat/providers/home_provider.dart';
 import 'package:ajanchat/utils/utils.dart';
@@ -18,6 +21,19 @@ class HomeTab extends StatefulWidget {
 class _HomeTabState extends State<HomeTab> {
   bool isBusy = true;
   AuthProvider authProvider = AuthProvider();
+  late StreamSubscription<ConnectivityResult> subscription;
+  late ConnectivityResult connectivityStatus;
+
+  @override
+  initState() {
+    super.initState();
+    connectivityStatus = ConnectivityResult.none;
+    subscription = Connectivity().onConnectivityChanged.listen((ConnectivityResult result) {
+      setState(() {
+        connectivityStatus = result;
+      });
+    });
+  }
 
   @override
   void didChangeDependencies() async {
@@ -27,8 +43,10 @@ class _HomeTabState extends State<HomeTab> {
   }
 
   @override
-  void initState() {
-    super.initState();
+  dispose() {
+    super.dispose();
+
+    subscription.cancel();
   }
 
   @override
@@ -40,7 +58,9 @@ class _HomeTabState extends State<HomeTab> {
           decoration: BoxDecoration(image: DecorationImage(image: AssetImage(FileAssets.bg2), fit: BoxFit.cover)),
           child: homeProvider.isBusy
               ? const Loading()
-              : Column(
+              : connectivityStatus == ConnectivityResult.none
+                ? Offline()
+                : Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Padding(
