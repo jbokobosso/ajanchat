@@ -56,7 +56,8 @@ class _TabsPageState extends State<TabsPage> {
                 badgeContent: Text(Provider.of<RequestProvider>(context).requests.length.toString(), style: const TextStyle(color: Colors.white)),
                 child: const Icon(Icons.volunteer_activism),
               ),
-              label: "Requetes"
+              label: "Requetes",
+              backgroundColor: const Color(0xff19516F)
             ),
             const BottomNavigationBarItem(icon: Icon(Icons.message), label: "Discussions", backgroundColor: Color(0xff19516F)),
             const BottomNavigationBarItem(icon: Icon(Icons.person), label: "Profil", backgroundColor: Color(0xff19516F)),

@@ -9,6 +9,7 @@ import 'package:flutter/material.dart';
 
 class ChatProvider extends ChangeNotifier {
 
+  bool isBusy = false;
   late Stream<QuerySnapshot<Map<String, dynamic>>> streamData;
   List<ChatTileModel> chats = [];
   TextEditingController chatController = TextEditingController();

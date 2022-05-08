@@ -3,6 +3,7 @@ import 'package:ajanchat/pages/tabs/request/request_tile.dart';
 import 'package:ajanchat/providers/request_provider.dart';
 import 'package:ajanchat/widgets/loading.dart';
 import 'package:flutter/material.dart';
+import 'package:lottie/lottie.dart';
 import 'package:provider/provider.dart';
 
 class RequestTab extends StatefulWidget {
@@ -22,7 +23,8 @@ class _RequestTabState extends State<RequestTab> {
           decoration: BoxDecoration(image: DecorationImage(image: AssetImage(FileAssets.bg2), fit: BoxFit.cover)),
           child: Stack(
             children: [
-              GridView.builder(
+              requestProvider.requests.isNotEmpty
+                  ? GridView.builder(
                 padding: const EdgeInsets.only(left: 5.0, right: 5.0, top: 120.0),
                 itemCount: requestProvider.requests.length,
                 gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
@@ -32,8 +34,17 @@ class _RequestTabState extends State<RequestTab> {
                     mainAxisSpacing: 10.0
                 ),
                 itemBuilder: (BuildContext context, index) => RequestTile(ajanModel: requestProvider.requests[index]),
-              ),
-              requestProvider.isBusy ? const Loading() : Container()
+              )
+                  : Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Lottie.asset(FileAssets.lottieEmptyBox),
+                      Text("Oupsss... Revenez plus tard", style: TextStyle(color: Theme.of(context).primaryColor))
+                    ],
+                  ),
+              requestProvider.isBusy
+                  ? const Loading()
+                  : Container()
             ],
           ),
         )
