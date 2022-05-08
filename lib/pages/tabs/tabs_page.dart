@@ -3,6 +3,7 @@ import 'package:ajanchat/constants/globals.dart';
 import 'package:ajanchat/pages/tabs/chat/chat_tab.dart';
 import 'package:ajanchat/pages/tabs/home_tab.dart';
 import 'package:ajanchat/pages/tabs/profile_tab.dart';
+import 'package:ajanchat/pages/tabs/request/request_tab.dart';
 import 'package:ajanchat/pages/tabs/settings_tab.dart';
 import 'package:ajanchat/providers/auth_provider.dart';
 import 'package:ajanchat/providers/chat_provider.dart';
@@ -23,15 +24,9 @@ class TabsPage extends StatefulWidget {
 
 class _TabsPageState extends State<TabsPage> {
 
-  final iconList = <IconData>[
-    Icons.home,
-    Icons.message,
-    Icons.person,
-    Icons.settings,
-  ];
-
   final navigationTabs = const <Widget>[
     HomeTab(),
+    RequestTab(),
     ChatTab(),
     ProfileTab(),
     SettingsTab()
@@ -40,35 +35,33 @@ class _TabsPageState extends State<TabsPage> {
   @override
   Widget build(BuildContext context) {
 
-    double deviceWidth = MediaQuery.of(context).size.width;
-    double deviceHeight = MediaQuery.of(context).size.height;
-
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: CustomAppBar(
 
       ),
       body: Consumer<AuthProvider>(builder: (context, authProvider, child) => navigationTabs[authProvider.currentTabIndex]),
-      floatingActionButton: Badge(
-        badgeColor: Colors.blue,
-        badgeContent: Text(Provider.of<ChatProvider>(context).chats.length.toString(), style: const TextStyle(color: Colors.white)),
-        child: Icon(Icons.favorite, size: 35, color: Theme.of(context).primaryColor,)
-      ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       bottomNavigationBar: Consumer<AuthProvider>(
-        builder: (context, authProvider, child) => AnimatedBottomNavigationBar(
-          inactiveColor: Colors.white,
-          activeColor: Colors.pinkAccent,
-          backgroundColor: const Color(0xff19516F),
-          icons: iconList,
-          activeIndex: authProvider.currentTabIndex,
-          gapLocation: GapLocation.center,
-          notchSmoothness: NotchSmoothness.verySmoothEdge,
-          leftCornerRadius: 32,
-          rightCornerRadius: 32,
+        builder: (context, authProvider, child) => BottomNavigationBar(
+          currentIndex: authProvider.currentTabIndex,
           onTap: (index) => setState(() => authProvider.changeTabIndex(index)),
-          //other params
-        ),
+          selectedItemColor: Colors.pinkAccent,
+          unselectedItemColor: Colors.white,
+          items: [
+            const BottomNavigationBarItem(icon: Icon(Icons.home), label: "Accueil", backgroundColor: Color(0xff19516F)),
+            BottomNavigationBarItem(
+              icon: Badge(
+                badgeColor: Colors.blue,
+                badgeContent: Text(Provider.of<ChatProvider>(context).chats.length.toString(), style: const TextStyle(color: Colors.white)),
+                child: const Icon(Icons.volunteer_activism),
+              ),
+              label: "Requetes"
+            ),
+            const BottomNavigationBarItem(icon: Icon(Icons.message), label: "Discussions", backgroundColor: Color(0xff19516F)),
+            const BottomNavigationBarItem(icon: Icon(Icons.person), label: "Profil", backgroundColor: Color(0xff19516F)),
+            const BottomNavigationBarItem(icon: Icon(Icons.settings), label: "Paramètres", backgroundColor: Color(0xff19516F)),
+          ],
+        )
       )
     );
   }

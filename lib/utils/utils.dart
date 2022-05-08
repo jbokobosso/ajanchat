@@ -1,8 +1,26 @@
+import 'package:ajanchat/constants/relation_type_colors.dart';
+import 'package:ajanchat/models/ERelationType.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
 class Utils {
+
+  static Color getColorByRelationType(ERelationType relationType) {
+    late Color result;
+    switch(relationType) {
+      case ERelationType.flirt:
+        result = FlirtColor;
+        break;
+      case ERelationType.friend:
+        result = FriendColor;
+        break;
+      case ERelationType.serious:
+        result = SeriousColor;
+        break;
+    }
+    return result;
+  }
 
   static int calculateAge(DateTime birthDate) {
     double value = DateTime.now().difference(birthDate).inDays/(365);
