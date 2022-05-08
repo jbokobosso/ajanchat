@@ -53,6 +53,7 @@ class HomeProvider extends ChangeNotifier {
       AjanModel _loggedUser = await getLoggedUserFromFirebase();
       ajanToExlude.addAll(_loggedUser.dislikedAjanList);
       ajanToExlude.addAll(_loggedUser.likedAjanList);
+      ajanToExlude.addAll(_loggedUser.inRelationAjanList);
 
       QuerySnapshot<Map<String, dynamic>> data = await FirebaseFirestore.instance
           .collection(Globals.FCN_ajan)
@@ -92,6 +93,8 @@ class HomeProvider extends ChangeNotifier {
       List<dynamic> ajanToExlude = [];
       ajanToExlude.addAll(likedAjanList);
       ajanToExlude.addAll(dislikedAjanList);
+      AjanModel _loggedUser = await getLoggedUserFromFirebase();
+      ajanToExlude.addAll(_loggedUser.inRelationAjanList);
 
       QuerySnapshot<Map<String, dynamic>> data = await FirebaseFirestore.instance
           .collection(Globals.FCN_ajan)

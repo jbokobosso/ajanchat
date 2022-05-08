@@ -15,6 +15,7 @@ class AjanModel {
   bool isActive;
   List<dynamic> likedAjanList;
   List<dynamic> dislikedAjanList;
+  List<dynamic> inRelationAjanList;
 
   AjanModel({
     this.id = "",
@@ -29,6 +30,7 @@ class AjanModel {
     this.isActive = true,
     required this.likedAjanList,
     required this.dislikedAjanList,
+    required this.inRelationAjanList
   });
 
   Map<String, dynamic> toMap() {
@@ -44,7 +46,8 @@ class AjanModel {
       "location": location!.toMap(),
       "isActive": isActive,
       "likedAjanList": likedAjanList,
-      "dislikedAjanList": dislikedAjanList
+      "dislikedAjanList": dislikedAjanList,
+      "inRelationAjanList": inRelationAjanList
     };
   }
 
@@ -61,7 +64,8 @@ class AjanModel {
       location: PlaceModel.fromMap(firebaseData['location']),
       isActive: firebaseData['isActive'],
       likedAjanList: firebaseData['likedAjanList'],
-      dislikedAjanList: firebaseData['dislikedAjanList']
+      dislikedAjanList: firebaseData['dislikedAjanList'],
+      inRelationAjanList: firebaseData['inRelationAjanList']
     );
   }
 }

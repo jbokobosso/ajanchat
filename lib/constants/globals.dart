@@ -34,8 +34,21 @@ class Globals {
   ///   *   FIREBASE COLLECTION NAMES   * ***/
   /// *  ***************************  * ***/
   static const FCN_ajan = "ajan_profile";
+
+
+
+
+
+
+
+
+  ///*  ***************************  * ***/
+  ///   *   FIREBASE DOCUMENT PROPERTIES NAMES   * ***/
+  /// *  ***************************  * ***/
   static const FDP_likedAjanList = "likedAjanList";
   static const FDP_dislikedAjanList = "dislikedAjanList";
+  static const FDP_chatRooms = "chatRooms";
+  static const FDP_inRelationAjanList = "inRelationAjanList";
 
 
 

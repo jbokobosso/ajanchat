@@ -32,21 +32,42 @@ class AuthProvider extends ChangeNotifier {
       preferences: [],
       images: [],
       birthDate: DateTime.fromMicrosecondsSinceEpoch(1000),
-      relationPreferences: RelationPreferences(iam: Gender.spartan, iWannaMeet: Gender.spartan, relationType: ERelationType.spartan), dislikedAjanList: [], likedAjanList: []
+      relationPreferences: RelationPreferences(
+        iam: Gender.spartan,
+        iWannaMeet: Gender.spartan,
+        relationType: ERelationType.spartan
+      ),
+      dislikedAjanList: [],
+      likedAjanList: [],
+      inRelationAjanList: []
   );
   AjanModel signupAjan = AjanModel(
       phoneNumber: "",
       preferences: [],
       images: [],
       birthDate: DateTime.fromMicrosecondsSinceEpoch(1000),
-      relationPreferences: RelationPreferences(iam: Gender.spartan, iWannaMeet: Gender.spartan, relationType: ERelationType.spartan), dislikedAjanList: [], likedAjanList: []
+      relationPreferences: RelationPreferences(
+        iam: Gender.spartan,
+        iWannaMeet: Gender.spartan,
+        relationType: ERelationType.spartan
+      ),
+      dislikedAjanList: [],
+      likedAjanList: [],
+      inRelationAjanList: []
   );
   AjanModel loggedUser = AjanModel(
     phoneNumber: "",
     preferences: [],
     images: [],
     birthDate: DateTime.fromMicrosecondsSinceEpoch(1000),
-    relationPreferences: RelationPreferences(iam: Gender.spartan, iWannaMeet: Gender.spartan, relationType: ERelationType.spartan), dislikedAjanList: [], likedAjanList: []
+    relationPreferences: RelationPreferences(
+      iam: Gender.spartan,
+      iWannaMeet: Gender.spartan,
+      relationType: ERelationType.spartan
+    ),
+      dislikedAjanList: [],
+      likedAjanList: [],
+      inRelationAjanList: []
   );
   bool isBusy = false;
   String errorMessage  = "";

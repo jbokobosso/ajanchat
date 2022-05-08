@@ -7,6 +7,7 @@ import 'package:ajanchat/pages/tabs/request/request_tab.dart';
 import 'package:ajanchat/pages/tabs/settings_tab.dart';
 import 'package:ajanchat/providers/auth_provider.dart';
 import 'package:ajanchat/providers/chat_provider.dart';
+import 'package:ajanchat/providers/request_provider.dart';
 import 'package:ajanchat/widgets/custom_app_bar.dart';
 import 'package:ajanchat/widgets/otp.dart';
 import 'package:animated_bottom_navigation_bar/animated_bottom_navigation_bar.dart';
@@ -52,7 +53,7 @@ class _TabsPageState extends State<TabsPage> {
             BottomNavigationBarItem(
               icon: Badge(
                 badgeColor: Colors.blue,
-                badgeContent: Text(Provider.of<ChatProvider>(context).chats.length.toString(), style: const TextStyle(color: Colors.white)),
+                badgeContent: Text(Provider.of<RequestProvider>(context).requests.length.toString(), style: const TextStyle(color: Colors.white)),
                 child: const Icon(Icons.volunteer_activism),
               ),
               label: "Requetes"
@@ -72,6 +73,7 @@ class _TabsPageState extends State<TabsPage> {
       await Provider.of<AuthProvider>(context, listen: false).loadLoggedUserFromFirebaseAndNotify();
     }
     Provider.of<ChatProvider>(context, listen: false).loadChats();
+    Provider.of<RequestProvider>(context, listen: false).loadRequests();
     super.didChangeDependencies();
   }
 }

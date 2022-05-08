@@ -3,6 +3,7 @@ import 'package:ajanchat/constants/routes.dart';
 import 'package:ajanchat/providers/auth_provider.dart';
 import 'package:ajanchat/providers/chat_provider.dart';
 import 'package:ajanchat/providers/home_provider.dart';
+import 'package:ajanchat/providers/request_provider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
@@ -17,7 +18,8 @@ void main() async {
       providers: [
         ChangeNotifierProvider(create: (context) => AuthProvider()),
         ChangeNotifierProvider(create: (context) => HomeProvider()),
-        ChangeNotifierProvider(create: (context) => ChatProvider())
+        ChangeNotifierProvider(create: (context) => ChatProvider()),
+        ChangeNotifierProvider(create: (context) => RequestProvider()),
       ],
       child: const MyApp(),
     ),

@@ -22,7 +22,7 @@ class ChatProvider extends ChangeNotifier {
       streamData = FirebaseFirestore.instance
           .collection(Globals.FCN_ajan)
           .where("id", isNotEqualTo: FirebaseAuth.instance.currentUser!.uid)
-          .where(Globals.FDP_likedAjanList, arrayContains: FirebaseAuth.instance.currentUser!.uid)
+          .where(Globals.FDP_inRelationAjanList, arrayContains: FirebaseAuth.instance.currentUser!.uid)
           .snapshots();
 
       streamData.listen((QuerySnapshot<Map<String, dynamic>> queryDocumentSnapshotEvent) async {
