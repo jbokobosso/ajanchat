@@ -1,11 +1,15 @@
+import 'dart:io';
+
 import 'package:ajanchat/constants/file_assets.dart';
 import 'package:ajanchat/pages/tabs/chat/chat_app_bar.dart';
 import 'package:ajanchat/pages/tabs/chat/chat_bubble.dart';
+import 'package:ajanchat/providers/auth_provider.dart';
 import 'package:ajanchat/providers/chat_provider.dart';
 import 'package:ajanchat/utils/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
+import 'package:socket_io_client/socket_io_client.dart';
 
 class SingleChatPage extends StatefulWidget {
   const SingleChatPage({Key? key}) : super(key: key);
@@ -18,7 +22,15 @@ class _SingleChatPageState extends State<SingleChatPage> {
 
   @override
   void initState() {
+    Provider.of<ChatProvider>(context, listen: false).initSocket();
     super.initState();
+  }
+
+
+  @override
+  void dispose() {
+    Provider.of<ChatProvider>(context, listen: false).disposeSocket();
+    super.dispose();
   }
 
   @override
@@ -72,7 +84,7 @@ class _SingleChatPageState extends State<SingleChatPage> {
                     ),
                     chatProvider.chatController.text == ""
                         ? IconButton(icon: SvgPicture.asset(FileAssets.voiceIcon, width: 25.0,), onPressed: () => Utils.showToast("Record message"))
-                        : IconButton(icon: SvgPicture.asset(FileAssets.sendIcon, width: 25.0,), onPressed: () => Utils.showToast("Send message"))
+                        : IconButton(icon: SvgPicture.asset(FileAssets.sendIcon, width: 25.0,), onPressed: () => chatProvider.sendMessage(Provider.of<AuthProvider>(context, listen: false).loggedUser))
                   ],
                 )
               )
